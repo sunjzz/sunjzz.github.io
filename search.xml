@@ -263,7 +263,7 @@
     <title>Git学习</title>
     <url>/enjoytech/2021/03/12/git%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<h2 id="Git版本管理工具"><a href="#Git版本管理工具" class="headerlink" title="Git版本管理工具"></a>Git版本管理工具</h2><p>常用命令：</p>
-<p>  git config –global user.email “<a href="mailto:&#x79;&#111;&#x75;&#64;&#x65;&#x78;&#x61;&#x6d;&#112;&#108;&#x65;&#46;&#x63;&#x6f;&#109;">&#x79;&#111;&#x75;&#64;&#x65;&#x78;&#x61;&#x6d;&#112;&#108;&#x65;&#46;&#x63;&#x6f;&#109;</a>“<br>  git config –global user.name “Your Name”</p>
+<p>  git config –global user.email “<a href="mailto:&#121;&#111;&#x75;&#64;&#101;&#x78;&#97;&#x6d;&#112;&#108;&#101;&#46;&#99;&#111;&#109;">&#121;&#111;&#x75;&#64;&#101;&#x78;&#97;&#x6d;&#112;&#108;&#101;&#46;&#99;&#111;&#109;</a>“<br>  git config –global user.name “Your Name”</p>
 <ul>
 <li><p>git init    # 初始化，让git管理当前文件夹</p>
 </li>
@@ -657,6 +657,15 @@
 ]]></content>
   </entry>
   <entry>
+    <title>解决Github访问慢</title>
+    <url>/enjoytech/2021/03/12/%E8%AE%BF%E9%97%AEGithub%E6%85%A2/</url>
+    <content><![CDATA[<h2 id="访问Github慢"><a href="#访问Github慢" class="headerlink" title="访问Github慢"></a>访问Github慢</h2><ul>
+<li>打开 <a href="http://www.github.com.ipaddress.com/">http://www.github.com.ipaddress.com/</a>,  查看当前环境对应的 GitHub的ip地址</li>
+<li>在hosts文件中增加以下地址： [ipaddress] github.com</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>Bind服务部署</title>
     <url>/enjoytech/2021/03/12/%E5%AE%89%E8%A3%85Bind%E6%9C%8D%E5%8A%A1/</url>
     <content><![CDATA[<p>K8S环境部署</p>
@@ -701,15 +710,6 @@
 <p>OU: Organization Unit Name ,组织单位名称,公司部门</p>
 <p>“expiry”: “175200h”  # 过期时间（20年）</p>
 <p><code>cfssl gencert -initca ca-csr.json | cfssl-json -bare ca</code></p>
-]]></content>
-  </entry>
-  <entry>
-    <title>解决Github访问慢</title>
-    <url>/enjoytech/2021/03/12/%E8%AE%BF%E9%97%AEGithub%E6%85%A2/</url>
-    <content><![CDATA[<h2 id="访问Github慢"><a href="#访问Github慢" class="headerlink" title="访问Github慢"></a>访问Github慢</h2><ul>
-<li>打开 <a href="http://www.github.com.ipaddress.com/">http://www.github.com.ipaddress.com/</a>,  查看当前环境对应的 GitHub的ip地址</li>
-<li>在hosts文件中增加以下地址： [ipaddress] github.com</li>
-</ul>
 ]]></content>
   </entry>
 </search>
