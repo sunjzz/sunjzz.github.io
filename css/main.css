@@ -992,7 +992,7 @@ pre .javascript .function {
 }
 .site-subtitle {
   color: #ddd;
-  font-size: 13px;
+  font-size: 14px;
   margin: 10px 0;
 }
 .use-motion .brand {
@@ -1063,7 +1063,7 @@ pre .javascript .function {
 .menu-item span.exturl {
   border-bottom: 0;
   display: block;
-  font-size: 13px;
+  font-size: 14px;
   transition-property: border-color;
   transition-delay: 0s;
   transition-duration: 0.2s;
@@ -1150,7 +1150,7 @@ pre .javascript .function {
 }
 .site-description {
   color: #999;
-  font-size: 13px;
+  font-size: 14px;
   margin-top: 0;
   text-align: center;
 }
@@ -1161,14 +1161,14 @@ pre .javascript .function {
 .links-of-author span.exturl {
   border-bottom-color: #555;
   display: inline-block;
-  font-size: 13px;
+  font-size: 14px;
   margin-bottom: 10px;
   margin-right: 10px;
   vertical-align: middle;
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #ffff2f;
+  background: #ff40a1;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -1205,7 +1205,7 @@ pre .javascript .function {
   color: #fff;
 }
 .links-of-blogroll {
-  font-size: 13px;
+  font-size: 14px;
   margin-top: 10px;
 }
 .links-of-blogroll-title {
@@ -1365,7 +1365,7 @@ pre .javascript .function {
 }
 .site-state-item-name {
   color: #999;
-  font-size: 13px;
+  font-size: 14px;
 }
 .footer {
   color: #999;
@@ -1902,7 +1902,7 @@ pre .javascript .function {
 }
 .post-tags a {
   display: inline-block;
-  font-size: 13px;
+  font-size: 14px;
 }
 .post-tags a:not(:last-child) {
   margin-right: 10px;
