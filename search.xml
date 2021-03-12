@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title></title>
+    <title>Django模型操作</title>
     <url>/enjoytech/2021/03/12/Django%E6%A8%A1%E5%9E%8B%E6%93%8D%E4%BD%9C/</url>
     <content><![CDATA[<p>上一篇我们已经将表结构通过model迁移至数据库，接下来我们就来通过操作对象的方式来操作数据库，为了方便演示，应用articles的models定义更改如下：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Account</span>(<span class="params">models.Model</span>):</span></span><br><span class="line">    username = models.CharField(max_length=<span class="number">64</span>, unique=<span class="literal">True</span>, verbose_name=<span class="string">&quot;用户名&quot;</span>)</span><br><span class="line">    email = models.EmailField(verbose_name=<span class="string">&quot;邮箱&quot;</span>)</span><br><span class="line">    password = models.CharField(max_length=<span class="number">128</span>, verbose_name=<span class="string">&quot;用户密码&quot;</span>)</span><br><span class="line">    register_date = models.DateTimeField(auto_now_add=<span class="literal">True</span>, verbose_name=<span class="string">&quot;注册日期&quot;</span>)</span><br><span class="line">    signature = models.CharField(max_length=<span class="number">128</span>, blank=<span class="literal">True</span>, null=<span class="literal">True</span>, verbose_name=<span class="string">&quot;签名&quot;</span>)</span><br><span class="line">    avatar = models.ImageField(upload_to=<span class="string">&#x27;static/image/&#x27;</span>, default=<span class="string">&#x27;static/image/default.jpg&#x27;</span>,</span><br><span class="line">                               verbose_name=<span class="string">&quot;用户图像&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Article</span>(<span class="params">models.Model</span>):</span></span><br><span class="line">    title = models.CharField(max_length=<span class="number">100</span>, verbose_name=<span class="string">&quot;文章标题&quot;</span>)</span><br><span class="line">    content = models.TextField(blank=<span class="literal">True</span>, null=<span class="literal">True</span>, verbose_name=<span class="string">&quot;博客正文&quot;</span>)</span><br><span class="line">    account = models.ForeignKey(<span class="string">&#x27;Account&#x27;</span>, on_delete=models.CASCADE, related_name=<span class="string">&#x27;art&#x27;</span>)</span><br><span class="line">    tags = models.ManyToManyField(<span class="string">&#x27;Tag&#x27;</span>, null=<span class="literal">True</span>, verbose_name=<span class="string">&quot;博客标签&quot;</span>)</span><br><span class="line">    pub_date = models.DateTimeField(auto_now_add=<span class="literal">True</span>, verbose_name=<span class="string">&quot;发表时间&quot;</span>)</span><br><span class="line">    read_count = models.IntegerField(verbose_name=<span class="string">&quot;阅读量&quot;</span>, null=<span class="literal">True</span>)</span><br><span class="line">    like = models.IntegerField(verbose_name=<span class="string">&quot;点赞量&quot;</span>, null=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Tag</span>(<span class="params">models.Model</span>):</span></span><br><span class="line">    name = models.CharField(max_length=<span class="number">64</span>, unique=<span class="literal">True</span>, verbose_name=<span class="string">&#x27;标签名称&#x27;</span>)</span><br><span class="line">    date = models.DateTimeField(auto_now_add=<span class="literal">True</span>, verbose_name=<span class="string">&#x27;创建时间&#x27;</span>)</span><br></pre></td></tr></table></figure>
@@ -159,7 +159,7 @@
 ]]></content>
   </entry>
   <entry>
-    <title></title>
+    <title>Redis 5集群节点环境误删恢复</title>
     <url>/enjoytech/2021/03/12/Redis%205%20%E9%9B%86%E7%BE%A4%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E8%AF%AF%E5%88%A0%E6%81%A2%E5%A4%8D/</url>
     <content><![CDATA[<h1 id="Redis-5-集群节点环境误删恢复"><a href="#Redis-5-集群节点环境误删恢复" class="headerlink" title="Redis 5 集群节点环境误删恢复"></a>Redis 5 集群节点环境误删恢复</h1><p>背景：准生产五主五从高可用环境，运维人员误删其中一个节点的环境。（五主五从节点错开）比如铲掉的主机IP是192.168.1.5，节点7002</p>
 <p>redis-cli -h 192.168.1.1 -p 7001 -a key@1234 </p>
@@ -173,7 +173,7 @@
 ]]></content>
   </entry>
   <entry>
-    <title></title>
+    <title>Docker基础</title>
     <url>/enjoytech/2021/03/12/docker%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<p>docker-ce 安装</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo yum-config-manager --add-repo http:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;docker-ce&#x2F;linux&#x2F;centos&#x2F;docker-ce.repo</span><br><span class="line">yum list docker-ce --show-duplicates</span><br><span class="line">sudo yum install -y docker-ce</span><br><span class="line">sudo systemctl enable docker</span><br><span class="line">sudo systemctl start docker</span><br><span class="line">vim &#x2F;etc&#x2F;docker&#x2F;daemon.json</span><br></pre></td></tr></table></figure>
@@ -260,10 +260,10 @@
 ]]></content>
   </entry>
   <entry>
-    <title></title>
+    <title>Git学习</title>
     <url>/enjoytech/2021/03/12/git%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<h2 id="Git版本管理工具"><a href="#Git版本管理工具" class="headerlink" title="Git版本管理工具"></a>Git版本管理工具</h2><p>常用命令：</p>
-<p>  git config –global user.email “<a href="mailto:&#x79;&#x6f;&#x75;&#x40;&#101;&#120;&#97;&#109;&#x70;&#x6c;&#101;&#46;&#99;&#x6f;&#109;">&#x79;&#x6f;&#x75;&#x40;&#101;&#120;&#97;&#109;&#x70;&#x6c;&#101;&#46;&#99;&#x6f;&#109;</a>“<br>  git config –global user.name “Your Name”</p>
+<p>  git config –global user.email “<a href="mailto:&#121;&#111;&#x75;&#64;&#101;&#120;&#97;&#x6d;&#112;&#x6c;&#x65;&#46;&#x63;&#111;&#x6d;">&#121;&#111;&#x75;&#64;&#101;&#120;&#97;&#x6d;&#112;&#x6c;&#x65;&#46;&#x63;&#111;&#x6d;</a>“<br>  git config –global user.name “Your Name”</p>
 <ul>
 <li><p>git init    # 初始化，让git管理当前文件夹</p>
 </li>
@@ -347,7 +347,7 @@
 ]]></content>
   </entry>
   <entry>
-    <title></title>
+    <title>k8s基础</title>
     <url>/enjoytech/2021/03/12/k8s%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<p>4组核心的Dockerfile指令</p>
 <ul>
@@ -432,7 +432,8 @@
   <entry>
     <title></title>
     <url>/enjoytech/2021/03/12/manjaro/</url>
-    <content><![CDATA[<ol>
+    <content><![CDATA[<hr>
+<h2 id="title：Manjaro初始化"><a href="#title：Manjaro初始化" class="headerlink" title="title：Manjaro初始化"></a>title：Manjaro初始化</h2><ol>
 <li><p>安装VirtualBox</p>
 <p>查看内核版本，下载对应版本包：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[jiang@e450 ~]$ uname -a</span><br><span class="line">Linux e450 5.9.16-1-MANJARO #1 SMP PREEMPT Mon Dec 21 22:00:46 UTC 2020 x86_64 GNU&#x2F;Linux</span><br></pre></td></tr></table></figure>
@@ -470,7 +471,7 @@
 ]]></content>
   </entry>
   <entry>
-    <title></title>
+    <title>Swap分区异常问题解决及rEFInd引导</title>
     <url>/enjoytech/2021/03/12/refind/</url>
     <content><![CDATA[<h2 id="Swap分区异常"><a href="#Swap分区异常" class="headerlink" title="Swap分区异常"></a>Swap分区异常</h2><p>笔记本更换硬盘了，用ghost做了一下disk-to-disk拷贝，swap分区的uuid信息丢失，但是在系统的grub里面还有这个记录，启动和关闭系统时，有如下报错:</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ERROR: resume: hibernation device <span class="string">&#x27;UUID=566cabc8-dd95-4290-9f8e-9eeewe76042e&#x27;</span> not found</span><br></pre></td></tr></table></figure>
@@ -516,7 +517,7 @@
 ]]></content>
   </entry>
   <entry>
-    <title></title>
+    <title>使用kubeadm搭建高可用k8s集群</title>
     <url>/enjoytech/2021/03/12/%E4%BD%BF%E7%94%A8kubeadm%E6%90%AD%E5%BB%BA%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84K8s%E9%9B%86%E7%BE%A4/</url>
     <content><![CDATA[<p>kubeadm是官方社区推出的一个用于快速部署kubernetes集群的工具。</p>
 <p>这个工具能通过两条指令完成一个kubernetes集群的部署：</p>
@@ -657,7 +658,7 @@
 ]]></content>
   </entry>
   <entry>
-    <title></title>
+    <title>Bind服务部署</title>
     <url>/enjoytech/2021/03/12/%E5%AE%89%E8%A3%85Bind%E6%9C%8D%E5%8A%A1/</url>
     <content><![CDATA[<p>K8S环境部署</p>
 <p>五台虚拟机</p>
@@ -704,7 +705,7 @@
 ]]></content>
   </entry>
   <entry>
-    <title></title>
+    <title>解决Github访问慢</title>
     <url>/enjoytech/2021/03/12/%E8%AE%BF%E9%97%AEGithub%E6%85%A2/</url>
     <content><![CDATA[<h2 id="访问Github慢"><a href="#访问Github慢" class="headerlink" title="访问Github慢"></a>访问Github慢</h2><ul>
 <li>打开 <a href="http://www.github.com.ipaddress.com/">http://www.github.com.ipaddress.com/</a>,  查看当前环境对应的 GitHub的ip地址</li>
