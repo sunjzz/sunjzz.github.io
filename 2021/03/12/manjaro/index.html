@@ -96,6 +96,8 @@
 <li><p>安装Pycharm社区版</p>
 <p>sudo pacman -S pycharm-community-edition</p>
 </li>
+<li><p>修改主目录为英文</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo pacman -S xdg-user-dirs-gtk</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> LANG=en_US</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> xdg-user-dirs-gtk-update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="comment">#然后会有个窗口提示语言更改，更新名称即可</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> LANG=zh_CN.UTF-8</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="comment">#然后重启电脑如果提示语言更改，保留旧的名称即可</span></span></span><br><span class="line">修改属性链接为英文目录，把对应中文目录下所有的文件拷贝到英文目录</span><br></pre></td></tr></table></figure></li>
 </ol>
 
       
