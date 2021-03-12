@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"oldboy.site","root":"/enjoytech/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="背景：准生产五主五从高可用环境，运维人员误删其中一个节点的环境。（五主五从节点错开）比如铲掉的主机IP是192.168.1.5，节点7002 redis-cli -h 192.168.1.1 -p 7001 -a key@1234  CLUSTER FORGET node-id  将其他节点的安装环境拷贝过去，更改节点配置文件BIND的IP rm -f dump.rdb redis.log red">
+  <meta name="description" content="背景：准生产五主五从高可用环境，运维人员误删其中一个节点的环境。（五主五从节点错开）比如铲掉的主机IP是192.168.1.5，节点7002  清理被误删节点的ID 12$ redis-cli -h 192.168.1.1 -p 7001 -a key@1234 CLUSTER FORGET node-id 将其他节点的安装环境拷贝过去，更改节点配置文件BIND的IP  清理无用的文件并启动服务">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis 5集群节点环境误删恢复">
 <meta property="og:url" content="https://oldboy.site/enjoytech/2021/03/12/Redis%205%20%E9%9B%86%E7%BE%A4%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E8%AF%AF%E5%88%A0%E6%81%A2%E5%A4%8D/index.html">
 <meta property="og:site_name" content="jzz&#39;s Blog">
-<meta property="og:description" content="背景：准生产五主五从高可用环境，运维人员误删其中一个节点的环境。（五主五从节点错开）比如铲掉的主机IP是192.168.1.5，节点7002 redis-cli -h 192.168.1.1 -p 7001 -a key@1234  CLUSTER FORGET node-id  将其他节点的安装环境拷贝过去，更改节点配置文件BIND的IP rm -f dump.rdb redis.log red">
+<meta property="og:description" content="背景：准生产五主五从高可用环境，运维人员误删其中一个节点的环境。（五主五从节点错开）比如铲掉的主机IP是192.168.1.5，节点7002  清理被误删节点的ID 12$ redis-cli -h 192.168.1.1 -p 7001 -a key@1234 CLUSTER FORGET node-id 将其他节点的安装环境拷贝过去，更改节点配置文件BIND的IP  清理无用的文件并启动服务">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-03-12T06:12:13.040Z">
-<meta property="article:modified_time" content="2021-03-12T13:42:23.944Z">
+<meta property="article:modified_time" content="2021-03-12T14:53:11.194Z">
 <meta property="article:author" content="摸鱼">
 <meta name="twitter:card" content="summary">
 
@@ -202,7 +202,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-12 14:12:13 / 修改时间：21:42:23" itemprop="dateCreated datePublished" datetime="2021-03-12T14:12:13+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 14:12:13 / 修改时间：22:53:11" itemprop="dateCreated datePublished" datetime="2021-03-12T14:12:13+08:00">2021-03-12</time>
             </span>
 
           
@@ -217,13 +217,15 @@
 
       
         <p>背景：准生产五主五从高可用环境，运维人员误删其中一个节点的环境。（五主五从节点错开）比如铲掉的主机IP是192.168.1.5，节点7002</p>
-<p>redis-cli -h 192.168.1.1 -p 7001 -a key@1234 </p>
-<p>CLUSTER FORGET node-id</p>
 <ol>
-<li>将其他节点的安装环境拷贝过去，更改节点配置文件BIND的IP</li>
-<li>rm -f dump.rdb redis.log redis.pid</li>
-<li>sh redis.sh start</li>
-<li>redis-cli -a redis@1024 –cluster add-node –cluster-slave –cluster-master-id ef90a8e72abddd026b3486ad12d712a37227fdd4 192.168.1.5:7002 192.168.1.4:7001</li>
+<li><p>清理被误删节点的ID</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ redis-cli -h 192.168.1.1 -p 7001 -a key@1234 </span><br><span class="line">CLUSTER FORGET node-id</span><br></pre></td></tr></table></figure></li>
+<li><p>将其他节点的安装环境拷贝过去，更改节点配置文件BIND的IP</p>
+</li>
+<li><p>清理无用的文件并启动服务</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ rm -f dump.rdb redis.log redis.pid</span><br><span class="line">$ sh redis.sh start</span><br></pre></td></tr></table></figure></li>
+<li><p>加入恢复的节点</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ redis-cli -a redis@1024 --cluster add-node --cluster-slave --cluster-master-id ef90a8e72abddd026b3486ad12d712a37227fdd4 192.168.1.5:7002 192.168.1.4:7001</span><br></pre></td></tr></table></figure></li>
 </ol>
 
     </div>
