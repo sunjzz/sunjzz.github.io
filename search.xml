@@ -274,7 +274,7 @@
     <title>Git学习</title>
     <url>/enjoytech/2021/03/12/git%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<h2 id="Git版本管理工具"><a href="#Git版本管理工具" class="headerlink" title="Git版本管理工具"></a>Git版本管理工具</h2><p>常用命令：</p>
-<p>  git config –global user.email “<a href="mailto:&#121;&#x6f;&#x75;&#64;&#x65;&#120;&#x61;&#109;&#112;&#x6c;&#x65;&#46;&#x63;&#x6f;&#109;">&#121;&#x6f;&#x75;&#64;&#x65;&#120;&#x61;&#109;&#112;&#x6c;&#x65;&#46;&#x63;&#x6f;&#109;</a>“<br>  git config –global user.name “Your Name”</p>
+<p>  git config –global user.email “<a href="mailto:&#121;&#x6f;&#117;&#64;&#x65;&#120;&#97;&#x6d;&#x70;&#108;&#x65;&#x2e;&#x63;&#x6f;&#x6d;">&#121;&#x6f;&#117;&#64;&#x65;&#120;&#97;&#x6d;&#x70;&#108;&#x65;&#x2e;&#x63;&#x6f;&#x6d;</a>“<br>  git config –global user.name “Your Name”</p>
 <ul>
 <li><p>git init    # 初始化，让git管理当前文件夹</p>
 </li>
