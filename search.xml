@@ -281,7 +281,7 @@
     <title>Git学习</title>
     <url>/enjoytech/2021/03/12/git%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<h2 id="Git版本管理工具"><a href="#Git版本管理工具" class="headerlink" title="Git版本管理工具"></a>Git版本管理工具</h2><p>常用命令：</p>
-<p>  git config –global user.email “<a href="mailto:&#121;&#x6f;&#117;&#x40;&#101;&#120;&#x61;&#109;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#x6f;&#109;">&#121;&#x6f;&#117;&#x40;&#101;&#120;&#x61;&#109;&#x70;&#x6c;&#x65;&#x2e;&#x63;&#x6f;&#109;</a>“<br>  git config –global user.name “Your Name”</p>
+<p>  git config –global user.email “<a href="mailto:&#x79;&#x6f;&#117;&#x40;&#101;&#120;&#x61;&#109;&#112;&#x6c;&#101;&#x2e;&#99;&#x6f;&#x6d;">&#x79;&#x6f;&#117;&#x40;&#101;&#120;&#x61;&#109;&#112;&#x6c;&#101;&#x2e;&#99;&#x6f;&#x6d;</a>“<br>  git config –global user.name “Your Name”</p>
 <ul>
 <li><p>git init    # 初始化，让git管理当前文件夹</p>
 </li>
@@ -518,6 +518,53 @@
 ]]></content>
   </entry>
   <entry>
+    <title>Bind服务部署</title>
+    <url>/enjoytech/2021/03/12/%E5%AE%89%E8%A3%85Bind%E6%9C%8D%E5%8A%A1/</url>
+    <content><![CDATA[<p>K8S环境部署</p>
+<p>五台虚拟机</p>
+<p>10.4.7.11    hostname:hdss7-11.host.com</p>
+<p>10.4.7.12    hostname:hdss7-12.host.com</p>
+<p>10.4.7.21    hostname:hdss7-21.host.com</p>
+<p>10.4.7.22    hostname:hdss7-22.host.com</p>
+<p>10.4.7.200    hostname:hdss7-200.host.com</p>
+<h3 id="安装Bind服务"><a href="#安装Bind服务" class="headerlink" title="安装Bind服务"></a>安装Bind服务</h3><p>10.4.7.11 yum install -y bind9</p>
+<p>bind服务配置：</p>
+<p>vi /etc/named.conf，以下是修改配置文件内容修改：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">listen-on port 53 &#123; 10.4.7.11; &#125;;</span><br><span class="line">&#x2F;&#x2F;listen-on-v6 port 53 &#123; ::1; &#125;;</span><br><span class="line">&#x2F;&#x2F;allow-query     &#123; localhost; &#125;;</span><br><span class="line">allow-query     &#123; any; &#125;;</span><br><span class="line">forwarders      &#123; 10.4.7.1; &#125;;</span><br><span class="line"></span><br><span class="line">recursion yes;</span><br><span class="line">&#x2F;&#x2F;dnssec-enable yes;</span><br><span class="line">&#x2F;&#x2F;dnssec-validation yes;</span><br><span class="line">dnssec-enable no;</span><br><span class="line">dnssec-validation no;</span><br></pre></td></tr></table></figure>
+
+<p>vi /etc/named.rfc1912.zones</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">zone &quot;host.com&quot; IN &#123;</span><br><span class="line">        type master;</span><br><span class="line">        file &quot;host.com.zone&quot;;</span><br><span class="line">        allow-update &#123; 10.4.7.11; &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">zone &quot;od.com&quot; IN &#123;</span><br><span class="line">        type master;</span><br><span class="line">        file &quot;od.com.zone&quot;;</span><br><span class="line">        allow-update &#123; 10.4.7.11; &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>vi /var/named/host.com.zone</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ORIGIN host.com.</span><br><span class="line">$TTL 600        ; 10 minutes</span><br><span class="line">@       IN SOA  dns.host.com. dnsadmin.host.com. (</span><br><span class="line">                20210225        ; serial</span><br><span class="line">                10800           ; refresh (3 hours)</span><br><span class="line">                900             ; refresh (15 minutes)</span><br><span class="line">                604800          ; expire (1 week)</span><br><span class="line">                86400           ; minimum (1 day)</span><br><span class="line">                )</span><br><span class="line">           NS   dns.host.com.</span><br><span class="line">$TTL 60 ; 1 minute</span><br><span class="line">dns             A       10.4.7.11</span><br><span class="line">HDSS7-11        A       10.4.7.11</span><br><span class="line">HDSS7-12        A       10.4.7.12</span><br><span class="line">HDSS7-21        A       10.4.7.21</span><br><span class="line">HDSS7-22        A       10.4.7.22</span><br><span class="line">HDSS7-200       A       10.4.7.200</span><br></pre></td></tr></table></figure>
+
+<p>vi /var/named/od.com.zone</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ORIGIN od.com.</span><br><span class="line">$TTL 600        ; 10 minutes</span><br><span class="line">@       IN SOA  dns.od.com. dnsadmin.od.com. (</span><br><span class="line">                20210225        ; serial</span><br><span class="line">                10800           ; refresh (3 hours)</span><br><span class="line">                900             ; refresh (15 minutes)</span><br><span class="line">                604800          ; expire (1 week)</span><br><span class="line">                86400           ; minimum (1 day)</span><br><span class="line">                )</span><br><span class="line">           NS   dns.od.com.</span><br><span class="line">$TTL 60 ; 1 minute</span><br><span class="line">dns             A       10.4.7.11</span><br></pre></td></tr></table></figure>
+
+
+
+<p>systemctl start named</p>
+<p>修改五台主机的网卡配置文件，DNS1=10.4.7.11</p>
+<p>vi /etc/resolve.conf，添加</p>
+<p>search host.com    #表示短域名</p>
+<h3 id="证书签发"><a href="#证书签发" class="headerlink" title="证书签发"></a>证书签发</h3><p> 访问<a href="https://pkg.cfssl.org/">https://pkg.cfssl.org/</a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;pkg.cfssl.org&#x2F;R1.2&#x2F;cfssl_linux-amd64 -O &#x2F;usr&#x2F;bin&#x2F;cfssl_linux-amd64</span><br><span class="line">wget https:&#x2F;&#x2F;pkg.cfssl.org&#x2F;R1.2&#x2F;cfssljson_linux-amd64 -O &#x2F;usr&#x2F;bin&#x2F;cfssljson_linux-amd64</span><br><span class="line">wget https:&#x2F;&#x2F;pkg.cfssl.org&#x2F;R1.2&#x2F;cfssl-certinfo_linux-amd64 -O &#x2F;usr&#x2F;bin&#x2F;cfssl-certinfo_linux-amd64</span><br><span class="line">chmod +x &#x2F;usr&#x2F;bin&#x2F;cfssl*</span><br></pre></td></tr></table></figure>
+
+<p>根证书签发：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim &#x2F;opt&#x2F;certs&#x2F;ca-csr.json</span><br><span class="line">&#123;</span><br><span class="line">    &quot;CN&quot;: &quot;OldboyEdu&quot;,</span><br><span class="line">    &quot;hosts&quot;: [</span><br><span class="line">    ],</span><br><span class="line">    &quot;key&quot;: &#123;</span><br><span class="line">        &quot;algo&quot;: &quot;rsa&quot;,</span><br><span class="line">        &quot;size&quot;: 2048</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;names&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;C&quot;: &quot;CN&quot;,</span><br><span class="line">            &quot;ST&quot;: &quot;beijing&quot;,</span><br><span class="line">            &quot;L&quot;: &quot;beijing&quot;,</span><br><span class="line">            &quot;O&quot;: &quot;od&quot;,</span><br><span class="line">            &quot;OU&quot;: &quot;ops&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;ca&quot;: &#123;</span><br><span class="line">        &quot;expiry&quot;: &quot;175200h&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>CN: Common Name ,浏览器使用该字段验证网站是否合法, 一般写的是域名。非常重要。浏览器使</p>
+<p>用该字段验证网站是否合法</p>
+<p>C: Country,国家</p>
+<p>ST:State,州，省</p>
+<p>L: Locality ,地区,城市</p>
+<p>O: Organization Name ,组织名称,公司名称</p>
+<p>OU: Organization Unit Name ,组织单位名称,公司部门</p>
+<p>“expiry”: “175200h”  # 过期时间（20年）</p>
+<p><code>cfssl gencert -initca ca-csr.json | cfssl-json -bare ca</code></p>
+]]></content>
+  </entry>
+  <entry>
     <title>使用kubeadm搭建高可用k8s集群</title>
     <url>/enjoytech/2021/03/12/%E4%BD%BF%E7%94%A8kubeadm%E6%90%AD%E5%BB%BA%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84K8s%E9%9B%86%E7%BE%A4/</url>
     <content><![CDATA[<p>kubeadm是官方社区推出的一个用于快速部署kubernetes集群的工具。</p>
@@ -656,53 +703,6 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ kubectl create deployment nginx --image&#x3D;nginx</span><br><span class="line">$ kubectl expose deployment nginx --port&#x3D;80 --type&#x3D;NodePort</span><br><span class="line">$ kubectl get pod,svc</span><br></pre></td></tr></table></figure>
 
 <p>访问地址：<a href="http://NodeIP:Port">http://NodeIP:Port</a>  </p>
-]]></content>
-  </entry>
-  <entry>
-    <title>Bind服务部署</title>
-    <url>/enjoytech/2021/03/12/%E5%AE%89%E8%A3%85Bind%E6%9C%8D%E5%8A%A1/</url>
-    <content><![CDATA[<p>K8S环境部署</p>
-<p>五台虚拟机</p>
-<p>10.4.7.11    hostname:hdss7-11.host.com</p>
-<p>10.4.7.12    hostname:hdss7-12.host.com</p>
-<p>10.4.7.21    hostname:hdss7-21.host.com</p>
-<p>10.4.7.22    hostname:hdss7-22.host.com</p>
-<p>10.4.7.200    hostname:hdss7-200.host.com</p>
-<h3 id="安装Bind服务"><a href="#安装Bind服务" class="headerlink" title="安装Bind服务"></a>安装Bind服务</h3><p>10.4.7.11 yum install -y bind9</p>
-<p>bind服务配置：</p>
-<p>vi /etc/named.conf，以下是修改配置文件内容修改：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">listen-on port 53 &#123; 10.4.7.11; &#125;;</span><br><span class="line">&#x2F;&#x2F;listen-on-v6 port 53 &#123; ::1; &#125;;</span><br><span class="line">&#x2F;&#x2F;allow-query     &#123; localhost; &#125;;</span><br><span class="line">allow-query     &#123; any; &#125;;</span><br><span class="line">forwarders      &#123; 10.4.7.1; &#125;;</span><br><span class="line"></span><br><span class="line">recursion yes;</span><br><span class="line">&#x2F;&#x2F;dnssec-enable yes;</span><br><span class="line">&#x2F;&#x2F;dnssec-validation yes;</span><br><span class="line">dnssec-enable no;</span><br><span class="line">dnssec-validation no;</span><br></pre></td></tr></table></figure>
-
-<p>vi /etc/named.rfc1912.zones</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">zone &quot;host.com&quot; IN &#123;</span><br><span class="line">        type master;</span><br><span class="line">        file &quot;host.com.zone&quot;;</span><br><span class="line">        allow-update &#123; 10.4.7.11; &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">zone &quot;od.com&quot; IN &#123;</span><br><span class="line">        type master;</span><br><span class="line">        file &quot;od.com.zone&quot;;</span><br><span class="line">        allow-update &#123; 10.4.7.11; &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>vi /var/named/host.com.zone</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ORIGIN host.com.</span><br><span class="line">$TTL 600        ; 10 minutes</span><br><span class="line">@       IN SOA  dns.host.com. dnsadmin.host.com. (</span><br><span class="line">                20210225        ; serial</span><br><span class="line">                10800           ; refresh (3 hours)</span><br><span class="line">                900             ; refresh (15 minutes)</span><br><span class="line">                604800          ; expire (1 week)</span><br><span class="line">                86400           ; minimum (1 day)</span><br><span class="line">                )</span><br><span class="line">           NS   dns.host.com.</span><br><span class="line">$TTL 60 ; 1 minute</span><br><span class="line">dns             A       10.4.7.11</span><br><span class="line">HDSS7-11        A       10.4.7.11</span><br><span class="line">HDSS7-12        A       10.4.7.12</span><br><span class="line">HDSS7-21        A       10.4.7.21</span><br><span class="line">HDSS7-22        A       10.4.7.22</span><br><span class="line">HDSS7-200       A       10.4.7.200</span><br></pre></td></tr></table></figure>
-
-<p>vi /var/named/od.com.zone</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ORIGIN od.com.</span><br><span class="line">$TTL 600        ; 10 minutes</span><br><span class="line">@       IN SOA  dns.od.com. dnsadmin.od.com. (</span><br><span class="line">                20210225        ; serial</span><br><span class="line">                10800           ; refresh (3 hours)</span><br><span class="line">                900             ; refresh (15 minutes)</span><br><span class="line">                604800          ; expire (1 week)</span><br><span class="line">                86400           ; minimum (1 day)</span><br><span class="line">                )</span><br><span class="line">           NS   dns.od.com.</span><br><span class="line">$TTL 60 ; 1 minute</span><br><span class="line">dns             A       10.4.7.11</span><br></pre></td></tr></table></figure>
-
-
-
-<p>systemctl start named</p>
-<p>修改五台主机的网卡配置文件，DNS1=10.4.7.11</p>
-<p>vi /etc/resolve.conf，添加</p>
-<p>search host.com    #表示短域名</p>
-<h3 id="证书签发"><a href="#证书签发" class="headerlink" title="证书签发"></a>证书签发</h3><p> 访问<a href="https://pkg.cfssl.org/">https://pkg.cfssl.org/</a></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;pkg.cfssl.org&#x2F;R1.2&#x2F;cfssl_linux-amd64 -O &#x2F;usr&#x2F;bin&#x2F;cfssl_linux-amd64</span><br><span class="line">wget https:&#x2F;&#x2F;pkg.cfssl.org&#x2F;R1.2&#x2F;cfssljson_linux-amd64 -O &#x2F;usr&#x2F;bin&#x2F;cfssljson_linux-amd64</span><br><span class="line">wget https:&#x2F;&#x2F;pkg.cfssl.org&#x2F;R1.2&#x2F;cfssl-certinfo_linux-amd64 -O &#x2F;usr&#x2F;bin&#x2F;cfssl-certinfo_linux-amd64</span><br><span class="line">chmod +x &#x2F;usr&#x2F;bin&#x2F;cfssl*</span><br></pre></td></tr></table></figure>
-
-<p>根证书签发：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim &#x2F;opt&#x2F;certs&#x2F;ca-csr.json</span><br><span class="line">&#123;</span><br><span class="line">    &quot;CN&quot;: &quot;OldboyEdu&quot;,</span><br><span class="line">    &quot;hosts&quot;: [</span><br><span class="line">    ],</span><br><span class="line">    &quot;key&quot;: &#123;</span><br><span class="line">        &quot;algo&quot;: &quot;rsa&quot;,</span><br><span class="line">        &quot;size&quot;: 2048</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;names&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;C&quot;: &quot;CN&quot;,</span><br><span class="line">            &quot;ST&quot;: &quot;beijing&quot;,</span><br><span class="line">            &quot;L&quot;: &quot;beijing&quot;,</span><br><span class="line">            &quot;O&quot;: &quot;od&quot;,</span><br><span class="line">            &quot;OU&quot;: &quot;ops&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;ca&quot;: &#123;</span><br><span class="line">        &quot;expiry&quot;: &quot;175200h&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>CN: Common Name ,浏览器使用该字段验证网站是否合法, 一般写的是域名。非常重要。浏览器使</p>
-<p>用该字段验证网站是否合法</p>
-<p>C: Country,国家</p>
-<p>ST:State,州，省</p>
-<p>L: Locality ,地区,城市</p>
-<p>O: Organization Name ,组织名称,公司名称</p>
-<p>OU: Organization Unit Name ,组织单位名称,公司部门</p>
-<p>“expiry”: “175200h”  # 过期时间（20年）</p>
-<p><code>cfssl gencert -initca ca-csr.json | cfssl-json -bare ca</code></p>
 ]]></content>
   </entry>
   <entry>
