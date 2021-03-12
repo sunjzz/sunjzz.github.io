@@ -263,7 +263,7 @@
     <title>Git学习</title>
     <url>/enjoytech/2021/03/12/git%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<h2 id="Git版本管理工具"><a href="#Git版本管理工具" class="headerlink" title="Git版本管理工具"></a>Git版本管理工具</h2><p>常用命令：</p>
-<p>  git config –global user.email “<a href="mailto:&#121;&#x6f;&#117;&#64;&#101;&#120;&#97;&#x6d;&#x70;&#x6c;&#x65;&#46;&#x63;&#x6f;&#109;">&#121;&#x6f;&#117;&#64;&#101;&#120;&#97;&#x6d;&#x70;&#x6c;&#x65;&#46;&#x63;&#x6f;&#109;</a>“<br>  git config –global user.name “Your Name”</p>
+<p>  git config –global user.email “<a href="mailto:&#x79;&#111;&#x75;&#x40;&#101;&#x78;&#x61;&#x6d;&#x70;&#108;&#101;&#46;&#99;&#111;&#109;">&#x79;&#111;&#x75;&#x40;&#101;&#x78;&#x61;&#x6d;&#x70;&#108;&#101;&#46;&#99;&#111;&#109;</a>“<br>  git config –global user.name “Your Name”</p>
 <ul>
 <li><p>git init    # 初始化，让git管理当前文件夹</p>
 </li>
@@ -472,7 +472,7 @@
   <entry>
     <title>Swap分区异常问题解决及rEFInd引导</title>
     <url>/enjoytech/2021/03/12/refind/</url>
-    <content><![CDATA[<h2 id="Swap分区异常"><a href="#Swap分区异常" class="headerlink" title="Swap分区异常"></a>Swap分区异常</h2><p>笔记本更换硬盘了，用ghost做了一下disk-to-disk拷贝，swap分区的uuid信息丢失，但是在系统的grub里面还有这个记录，启动和关闭系统时，有如下报错:</p>
+    <content><![CDATA[<h3 id="Swap分区异常"><a href="#Swap分区异常" class="headerlink" title="Swap分区异常"></a>Swap分区异常</h3><p>笔记本更换硬盘了，用ghost做了一下disk-to-disk拷贝，swap分区的uuid信息丢失，但是在系统的grub里面还有这个记录，启动和关闭系统时，有如下报错:</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ERROR: resume: hibernation device <span class="string">&#x27;UUID=566cabc8-dd95-4290-9f8e-9eeewe76042e&#x27;</span> not found</span><br></pre></td></tr></table></figure>
 
 <p>解决：</p>
@@ -494,7 +494,7 @@
 <p>注意:不推荐直接修改/boot/grub/grub.cfg文件中的内容，而是通过上面的命令重新生成grub信息</p>
 </li>
 </ul>
-<h2 id="rEFInd引导"><a href="#rEFInd引导" class="headerlink" title="rEFInd引导"></a>rEFInd引导</h2><p>笔记本有两个硬盘位，分别安装了Win10和Manjaro系统，每次都要按F12来选择引导，比较麻烦。采用rEFInd来引导两个系统。</p>
+<h3 id="rEFInd引导"><a href="#rEFInd引导" class="headerlink" title="rEFInd引导"></a>rEFInd引导</h3><p>笔记本有两个硬盘位，分别安装了Win10和Manjaro系统，每次都要按F12来选择引导，比较麻烦。采用rEFInd来引导两个系统。</p>
 <ul>
 <li>查看磁盘第一个分区的相关信息</li>
 </ul>
