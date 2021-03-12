@@ -1,66 +1,220 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  
-  <title>Swap分区异常问题解决及rEFInd引导 | jzz&#39;s Blog</title>
-  <meta name="author" content="摸鱼">
-  
-  <meta name="description" content="好记性不如烂笔头">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/enjoytech/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/enjoytech/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/enjoytech/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/enjoytech/images/logo.svg" color="#222">
 
-  <meta property="og:title" content="Swap分区异常问题解决及rEFInd引导"/>
-  <meta property="og:site_name" content="jzz&#39;s Blog"/>
-
-  
-    <meta property="og:image" content=""/>
-  
-
-  <link rel="shortcut icon" href="/enjoytech/favicon.png">
-  
-  
-<link rel="stylesheet" href="/enjoytech/css/style.css">
-
-  <!--[if lt IE 9]><script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script><![endif]-->
-  
-
-<meta name="generator" content="Hexo 5.4.0"></head>
+<link rel="stylesheet" href="/enjoytech/css/main.css">
 
 
-<body>
-  <header id="header" class="inner"><div class="alignleft">
-  <h1><a href="/enjoytech/">jzz&#39;s Blog</a></h1>
-  <h2><a href="/enjoytech/"></a></h2>
+<link rel="stylesheet" href="/enjoytech/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"initcode.gitee.io","root":"/enjoytech/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Swap分区异常笔记本更换硬盘了，用ghost做了一下disk-to-disk拷贝，swap分区的uuid信息丢失，但是在系统的grub里面还有这个记录，启动和关闭系统时，有如下报错: 1ERROR: resume: hibernation device &amp;#x27;UUID&#x3D;566cabc8-dd95-4290-9f8e-9eeewe76042e&amp;#x27; not found  解决：  su">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swap分区异常问题解决及rEFInd引导">
+<meta property="og:url" content="https://initcode.gitee.io/enjoytech/2021/03/12/refind/index.html">
+<meta property="og:site_name" content="jzz&#39;s Blog">
+<meta property="og:description" content="Swap分区异常笔记本更换硬盘了，用ghost做了一下disk-to-disk拷贝，swap分区的uuid信息丢失，但是在系统的grub里面还有这个记录，启动和关闭系统时，有如下报错: 1ERROR: resume: hibernation device &amp;#x27;UUID&#x3D;566cabc8-dd95-4290-9f8e-9eeewe76042e&amp;#x27; not found  解决：  su">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-12T06:12:13.047Z">
+<meta property="article:modified_time" content="2021-03-12T12:29:15.844Z">
+<meta property="article:author" content="摸鱼">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://initcode.gitee.io/enjoytech/2021/03/12/refind/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Swap分区异常问题解决及rEFInd引导 | jzz's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/enjoytech/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">jzz's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
 </div>
-<nav id="main-nav" class="alignright">
-  <ul>
-    
-      <li><a href="/enjoytech/">Home</a></li>
-    
-      <li><a href="/enjoytech/archives">Archives</a></li>
-    
-  </ul>
-  <div class="clearfix"></div>
-</nav>
-<div class="clearfix"></div>
-</header>
-  <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper"><article id="post-refind" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time class="dt-published" datetime="2021-03-12T06:12:13.047Z"><a href="/enjoytech/2021/03/12/refind/">2021-03-12</a></time>
-      
-      
-  
-    <h1 class="p-name title" itemprop="headline name">Swap分区异常问题解决及rEFInd引导</h1>
-  
 
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/enjoytech/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/enjoytech/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
     </header>
-    <div class="e-content entry" itemprop="articleBody">
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://initcode.gitee.io/enjoytech/2021/03/12/refind/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/enjoytech/images/avatar.gif">
+      <meta itemprop="name" content="摸鱼">
+      <meta itemprop="description" content="好记性不如烂笔头">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="jzz's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Swap分区异常问题解决及rEFInd引导
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-12 14:12:13 / 修改时间：20:29:15" itemprop="dateCreated datePublished" datetime="2021-03-12T14:12:13+08:00">2021-03-12</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
         <h3 id="Swap分区异常"><a href="#Swap分区异常" class="headerlink" title="Swap分区异常"></a>Swap分区异常</h3><p>笔记本更换硬盘了，用ghost做了一下disk-to-disk拷贝，swap分区的uuid信息丢失，但是在系统的grub里面还有这个记录，启动和关闭系统时，有如下报错:</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ERROR: resume: hibernation device <span class="string">&#x27;UUID=566cabc8-dd95-4290-9f8e-9eeewe76042e&#x27;</span> not found</span><br></pre></td></tr></table></figure>
@@ -104,64 +258,187 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">dont_scan_volumes 241C1510-9B70-4EBF-A3EE-C0E6438CA409,A80E041A-9CE9-4295-A5DC-E7113DE615E4</span><br><span class="line"><span class="comment"># 这里就是上面我们查到的两块盘的第一个EFI分区，因为rEFInd会默认扫描所有的分区，所以会出现很多重复的启动项，这里先禁掉扫描的卷，要启动哪些项我们自己来定义</span></span><br><span class="line">scan_all_linux_kernels <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">include themes/rEFInd-minimal/theme.conf</span><br><span class="line"><span class="comment"># 下载了一个rEFInd-minimal的主题，这个是为了美化，可以不做</span></span><br><span class="line"></span><br><span class="line">menuentry <span class="string">&quot;Arch Linux&quot;</span> &#123;     </span><br><span class="line">    icon \EFI\refind\themes/rEFInd-minimal/icons/os_arch.png	<span class="comment"># 启动项的图标，这里用的是主题里面的图标</span></span><br><span class="line">    loader \EFI\Manjaro\grubx64.efi</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">menuentry <span class="string">&quot;Windows 10&quot;</span> &#123;     </span><br><span class="line">    icon \EFI\refind\themes/rEFInd-minimal/icons/os_win8.png</span><br><span class="line">    volume ED334DA0-59AE-425F-9BC4-4B7BB4705974	<span class="comment"># 引导的卷在/dev/sdb2</span></span><br><span class="line">    loader \EFI\Microsoft\Boot\bootmgfw.efi</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ul>
 
-      
     </div>
-    <footer>
-      
+
+    
+    
+    
+
+      <footer class="post-footer">
+
         
+
+
         
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article>
-
-</div></div>
-    <aside id="sidebar" class="alignright">
-  <div class="search">
-  <form action="//baidu.com/search" method="get" accept-charset="utf-8">
-    <input type="search" name="q" results="0" placeholder="搜索">
-    <input type="hidden" name="as_sitesearch" value="initcode.gitee.io/enjoytech">
-  </form>
-</div>
-
-
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/enjoytech/2021/03/12/manjaro/" rel="prev" title="Manjaro初始化">
+      <i class="fa fa-chevron-left"></i> Manjaro初始化
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
-  
-</aside>
-    <div class="clearfix"></div>
-  </div>
-  <footer id="footer" class="inner"><div class="alignleft">
-  
-  &copy; 2021 摸鱼
-  
-</div>
-<div class="clearfix"></div></footer>
-  
-<script src="/enjoytech/js/jquery-3.4.1.min.js"></script>
 
 
-<script src="/enjoytech/js/jquery.imagesloaded.min.js"></script>
-
-
-<script src="/enjoytech/js/gallery.js"></script>
-
-
-
-
-
-
-<link rel="stylesheet" href="/enjoytech/fancybox/jquery.fancybox.css">
-
-
-<script src="/enjoytech/fancybox/jquery.fancybox.pack.js"></script>
+          </div>
+          
 
 <script>
-(function($){
-  $('.fancybox').fancybox();
-})(jQuery);
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
 </script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Swap%E5%88%86%E5%8C%BA%E5%BC%82%E5%B8%B8"><span class="nav-number">1.</span> <span class="nav-text">Swap分区异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#rEFInd%E5%BC%95%E5%AF%BC"><span class="nav-number">2.</span> <span class="nav-text">rEFInd引导</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">摸鱼</p>
+  <div class="site-description" itemprop="description">好记性不如烂笔头</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/enjoytech/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">摸鱼</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/enjoytech/lib/anime.min.js"></script>
+  <script src="/enjoytech/lib/velocity/velocity.min.js"></script>
+  <script src="/enjoytech/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/enjoytech/js/utils.js"></script>
+
+<script src="/enjoytech/js/motion.js"></script>
+
+
+<script src="/enjoytech/js/schemes/muse.js"></script>
+
+
+<script src="/enjoytech/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/enjoytech/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
 
 </body>
 </html>
