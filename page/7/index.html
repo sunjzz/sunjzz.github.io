@@ -123,7 +123,7 @@
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/enjoytech/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">11</span></a>
+    <a href="/enjoytech/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">10</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -180,7 +180,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://oldboy.site/enjoytech/2021/03/12/k8s%E5%9F%BA%E7%A1%80/">
+    <link itemprop="mainEntityOfPage" href="https://oldboy.site/enjoytech/2021/03/12/%E5%AE%89%E8%A3%85Bind%E6%9C%8D%E5%8A%A1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/enjoytech/images/avatar.gif">
@@ -194,7 +194,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/enjoytech/2021/03/12/k8s%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">k8s基础</a>
+            <a href="/enjoytech/2021/03/12/%E5%AE%89%E8%A3%85Bind%E6%9C%8D%E5%8A%A1/" class="post-title-link" itemprop="url">Bind服务部署</a>
         </h2>
 
         <div class="post-meta">
@@ -205,7 +205,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2021-03-12 14:12:13 / 修改时间：23:47:10" itemprop="dateCreated datePublished" datetime="2021-03-12T14:12:13+08:00">2021-03-12</time>
+              <time title="创建时间：2021-03-12 14:12:13 / 修改时间：23:46:01" itemprop="dateCreated datePublished" datetime="2021-03-12T14:12:13+08:00">2021-03-12</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -213,7 +213,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/enjoytech/categories/K8S/" itemprop="url" rel="index"><span itemprop="name">K8S</span></a>
+                  <a href="/enjoytech/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
                 </span>
             </span>
 
@@ -228,84 +228,48 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>4组核心的Dockerfile指令</p>
-<ul>
-<li><p>USER/WORKDIR 指令</p>
-<p>docker里面进程使用的用户</p>
-<p>容器启动后所在的工作目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FROM jianghub&#x2F;nginx:v1.18</span><br><span class="line">USER nginx</span><br><span class="line">WORKDIR &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html</span><br></pre></td></tr></table></figure></li>
-<li><p>ADD/EXPOSE 指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">FROM jianghub&#x2F;nginx:v1.18</span><br><span class="line">ADD index.html &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html&#x2F;index.html</span><br><span class="line">EXPOSE 80	# EXPOSE指令只能配合-P使用才有效果</span><br><span class="line"></span><br><span class="line">docker build . -t jianghub&#x2F;nginx:v1.18_with_add</span><br><span class="line">docker run --rm -it --name mynginx -P jianghub&#x2F;nginx:v1.18_with_add &#x2F;bin&#x2F;bash</span><br><span class="line">nginx -g &quot;daemon off;&quot;</span><br><span class="line">docker run --rm -d --name mynginx -P jianghub&#x2F;nginx:v1.18_with_add</span><br></pre></td></tr></table></figure></li>
-<li><p>RUN/ENV 指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">FROM centos:7</span><br><span class="line">ENV VER 9.11.4-26.P2.el7_9.3</span><br><span class="line">RUN yum install bind-$VER -y</span><br><span class="line"></span><br><span class="line">docker build . -t centos7:with_run</span><br><span class="line">docker run --rm -it --name mycentos centos7:with_run &#x2F;bin&#x2F;bash</span><br><span class="line">[root@463b50876ff4 &#x2F;]# rpm -qa|grep bind</span><br><span class="line">bind-libs-lite-9.11.4-26.P2.el7_9.3.x86_64</span><br><span class="line">bind-libs-9.11.4-26.P2.el7_9.3.x86_64</span><br><span class="line">bind-license-9.11.4-26.P2.el7_9.3.noarch</span><br><span class="line">bind-9.11.4-26.P2.el7_9.3.x86_64</span><br><span class="line">[root@463b50876ff4 &#x2F;]# printenv</span><br><span class="line">PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin</span><br><span class="line">PWD&#x3D;&#x2F;</span><br><span class="line">SHLVL&#x3D;1</span><br><span class="line">HOME&#x3D;&#x2F;root</span><br><span class="line">VER&#x3D;9.11.4-26.P2.el7_9.3</span><br></pre></td></tr></table></figure></li>
-<li><p>CMD/ENTRYPOINT 指令</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">FROM centos:7</span><br><span class="line">RUN yum install httpd -y</span><br><span class="line">CMD [&quot;httpd&quot;, &quot;-D&quot;, &quot;FOREGROUND&quot;]</span><br><span class="line"></span><br><span class="line">docker build . -t jianghub&#x2F;centos:with_httpd</span><br><span class="line">docker run --rm -d --name myhttpd -p83:80 jianghub&#x2F;centos:with_httpd</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">FROM centos:7</span><br><span class="line">ADD entrypoint.sh &#x2F;entrypoint.sh</span><br><span class="line">RUN yum install epel-release -q -y &amp;&amp; yum install nginx -y</span><br><span class="line">ENTRYPOINT  &#x2F;entrypoint.sh</span><br><span class="line"></span><br><span class="line">docker run --rm -d --name mynginx -p 84:80 jianghub&#x2F;nginx:with_entrypoint</span><br><span class="line">docker exec -it mynginx &#x2F;bin&#x2F;bash</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
-</ul>
-<h2 id="Docker-网络模型"><a href="#Docker-网络模型" class="headerlink" title="Docker 网络模型"></a>Docker 网络模型</h2><p>–net 指定</p>
-<p>NAT（默认）</p>
-<p>None</p>
-<p>Host</p>
-<p>联合网络     –net=container:<em>ID</em></p>
-<p>意义：</p>
-<p>内核3.8以上</p>
-<p>统一了基础设施环境 硬件，操作系统版本</p>
-<p>统一了程序打包方式</p>
-<p>统一了程序部署方式</p>
-<ul>
-<li>java -jar –&gt; docker run</li>
-<li>python manage.py runserver –&gt; docker run</li>
-<li>npm run dev –&gt; docker run</li>
-</ul>
-<p>k8s 1.15版本</p>
-<p>四组基本概念</p>
-<ul>
-<li>Pod/Pod控制器</li>
-<li>Name/Namespace</li>
-<li>Label/Label选择器</li>
-<li>Service/Ingress</li>
-</ul>
-<p>Pod控制器</p>
-<p>保证pod按照预期运行（副本数，生命周期，健康状态检查）</p>
-<ul>
-<li>Deployment</li>
-<li>DaemonSet</li>
-<li>ReplicaSet</li>
-<li>StatefulSet</li>
-<li>Job</li>
-<li>Cronjob</li>
-</ul>
-<h3 id="核心组件"><a href="#核心组件" class="headerlink" title="核心组件"></a>核心组件</h3><p>配置存储中心 etc服务</p>
-<p>主控（master）节点</p>
-<ul>
-<li>kube-apiserver服务</li>
-<li>kube-controller-manager服务</li>
-<li>kube-scheduler服务</li>
-</ul>
-<p>运算（node）节点</p>
-<ul>
-<li><p>kube-kubelet服务</p>
-</li>
-<li><p>kube-proxy服务</p>
-<p>三种流量转发方式</p>
-<ul>
-<li>USerspace 废弃</li>
-<li>Iptables 濒临废弃 net_filter</li>
-<li>Ipvs 推荐 lvs性能比iptables要高效得多</li>
-</ul>
-</li>
-</ul>
-<p>CLI客户端</p>
-<ul>
-<li>kubectl</li>
-</ul>
-<p>核心附件 9</p>
-<ul>
-<li>CNI网络插件 –&gt;flannel/calico</li>
-<li>服务发现用插件 –&gt;coredns</li>
-<li>服务暴露用插件 –&gt;traefik</li>
-<li>GUI管理插件 –&gt;Dashboard</li>
-</ul>
-<p>网络 Pod网络 Service网络 Node网络</p>
+          <p>K8S环境部署</p>
+<p>五台虚拟机</p>
+<p>10.4.7.11    hostname:hdss7-11.host.com</p>
+<p>10.4.7.12    hostname:hdss7-12.host.com</p>
+<p>10.4.7.21    hostname:hdss7-21.host.com</p>
+<p>10.4.7.22    hostname:hdss7-22.host.com</p>
+<p>10.4.7.200    hostname:hdss7-200.host.com</p>
+<h3 id="安装Bind服务"><a href="#安装Bind服务" class="headerlink" title="安装Bind服务"></a>安装Bind服务</h3><p>10.4.7.11 yum install -y bind9</p>
+<p>bind服务配置：</p>
+<p>vi /etc/named.conf，以下是修改配置文件内容修改：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">listen-on port 53 &#123; 10.4.7.11; &#125;;</span><br><span class="line">&#x2F;&#x2F;listen-on-v6 port 53 &#123; ::1; &#125;;</span><br><span class="line">&#x2F;&#x2F;allow-query     &#123; localhost; &#125;;</span><br><span class="line">allow-query     &#123; any; &#125;;</span><br><span class="line">forwarders      &#123; 10.4.7.1; &#125;;</span><br><span class="line"></span><br><span class="line">recursion yes;</span><br><span class="line">&#x2F;&#x2F;dnssec-enable yes;</span><br><span class="line">&#x2F;&#x2F;dnssec-validation yes;</span><br><span class="line">dnssec-enable no;</span><br><span class="line">dnssec-validation no;</span><br></pre></td></tr></table></figure>
+
+<p>vi /etc/named.rfc1912.zones</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">zone &quot;host.com&quot; IN &#123;</span><br><span class="line">        type master;</span><br><span class="line">        file &quot;host.com.zone&quot;;</span><br><span class="line">        allow-update &#123; 10.4.7.11; &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">zone &quot;od.com&quot; IN &#123;</span><br><span class="line">        type master;</span><br><span class="line">        file &quot;od.com.zone&quot;;</span><br><span class="line">        allow-update &#123; 10.4.7.11; &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>vi /var/named/host.com.zone</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ORIGIN host.com.</span><br><span class="line">$TTL 600        ; 10 minutes</span><br><span class="line">@       IN SOA  dns.host.com. dnsadmin.host.com. (</span><br><span class="line">                20210225        ; serial</span><br><span class="line">                10800           ; refresh (3 hours)</span><br><span class="line">                900             ; refresh (15 minutes)</span><br><span class="line">                604800          ; expire (1 week)</span><br><span class="line">                86400           ; minimum (1 day)</span><br><span class="line">                )</span><br><span class="line">           NS   dns.host.com.</span><br><span class="line">$TTL 60 ; 1 minute</span><br><span class="line">dns             A       10.4.7.11</span><br><span class="line">HDSS7-11        A       10.4.7.11</span><br><span class="line">HDSS7-12        A       10.4.7.12</span><br><span class="line">HDSS7-21        A       10.4.7.21</span><br><span class="line">HDSS7-22        A       10.4.7.22</span><br><span class="line">HDSS7-200       A       10.4.7.200</span><br></pre></td></tr></table></figure>
+
+<p>vi /var/named/od.com.zone</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ORIGIN od.com.</span><br><span class="line">$TTL 600        ; 10 minutes</span><br><span class="line">@       IN SOA  dns.od.com. dnsadmin.od.com. (</span><br><span class="line">                20210225        ; serial</span><br><span class="line">                10800           ; refresh (3 hours)</span><br><span class="line">                900             ; refresh (15 minutes)</span><br><span class="line">                604800          ; expire (1 week)</span><br><span class="line">                86400           ; minimum (1 day)</span><br><span class="line">                )</span><br><span class="line">           NS   dns.od.com.</span><br><span class="line">$TTL 60 ; 1 minute</span><br><span class="line">dns             A       10.4.7.11</span><br></pre></td></tr></table></figure>
+
+
+
+<p>systemctl start named</p>
+<p>修改五台主机的网卡配置文件，DNS1=10.4.7.11</p>
+<p>vi /etc/resolve.conf，添加</p>
+<p>search host.com    #表示短域名</p>
+<h3 id="证书签发"><a href="#证书签发" class="headerlink" title="证书签发"></a>证书签发</h3><p> 访问<a target="_blank" rel="noopener" href="https://pkg.cfssl.org/">https://pkg.cfssl.org/</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;pkg.cfssl.org&#x2F;R1.2&#x2F;cfssl_linux-amd64 -O &#x2F;usr&#x2F;bin&#x2F;cfssl_linux-amd64</span><br><span class="line">wget https:&#x2F;&#x2F;pkg.cfssl.org&#x2F;R1.2&#x2F;cfssljson_linux-amd64 -O &#x2F;usr&#x2F;bin&#x2F;cfssljson_linux-amd64</span><br><span class="line">wget https:&#x2F;&#x2F;pkg.cfssl.org&#x2F;R1.2&#x2F;cfssl-certinfo_linux-amd64 -O &#x2F;usr&#x2F;bin&#x2F;cfssl-certinfo_linux-amd64</span><br><span class="line">chmod +x &#x2F;usr&#x2F;bin&#x2F;cfssl*</span><br></pre></td></tr></table></figure>
+
+<p>根证书签发：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">vim &#x2F;opt&#x2F;certs&#x2F;ca-csr.json</span><br><span class="line">&#123;</span><br><span class="line">    &quot;CN&quot;: &quot;OldboyEdu&quot;,</span><br><span class="line">    &quot;hosts&quot;: [</span><br><span class="line">    ],</span><br><span class="line">    &quot;key&quot;: &#123;</span><br><span class="line">        &quot;algo&quot;: &quot;rsa&quot;,</span><br><span class="line">        &quot;size&quot;: 2048</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;names&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;C&quot;: &quot;CN&quot;,</span><br><span class="line">            &quot;ST&quot;: &quot;beijing&quot;,</span><br><span class="line">            &quot;L&quot;: &quot;beijing&quot;,</span><br><span class="line">            &quot;O&quot;: &quot;od&quot;,</span><br><span class="line">            &quot;OU&quot;: &quot;ops&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;ca&quot;: &#123;</span><br><span class="line">        &quot;expiry&quot;: &quot;175200h&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>CN: Common Name ,浏览器使用该字段验证网站是否合法, 一般写的是域名。非常重要。浏览器使</p>
+<p>用该字段验证网站是否合法</p>
+<p>C: Country,国家</p>
+<p>ST:State,州，省</p>
+<p>L: Locality ,地区,城市</p>
+<p>O: Organization Name ,组织名称,公司名称</p>
+<p>OU: Organization Unit Name ,组织单位名称,公司部门</p>
+<p>“expiry”: “175200h”  # 过期时间（20年）</p>
+<p><code>cfssl gencert -initca ca-csr.json | cfssl-json -bare ca</code></p>
 
       
     </div>
@@ -324,7 +288,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/enjoytech/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/enjoytech/">1</a><span class="space">&hellip;</span><a class="page-number" href="/enjoytech/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/enjoytech/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/enjoytech/page/11/">11</a><a class="extend next" rel="next" href="/enjoytech/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/enjoytech/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/enjoytech/">1</a><span class="space">&hellip;</span><a class="page-number" href="/enjoytech/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/enjoytech/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/enjoytech/page/10/">10</a><a class="extend next" rel="next" href="/enjoytech/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -390,7 +354,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/enjoytech/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
