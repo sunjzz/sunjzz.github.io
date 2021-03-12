@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Hello World</title>
+    <url>/enjoytech/2021/03/12/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/enjoytech/2021/03/12/manjaro/</url>
+    <content><![CDATA[<ol>
+<li><p>安装VirtualBox</p>
+<p>查看内核版本，下载对应版本包：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[jiang@e450 ~]$ uname -a</span><br><span class="line">Linux e450 5.9.16-1-MANJARO #1 SMP PREEMPT Mon Dec 21 22:00:46 UTC 2020 x86_64 GNU&#x2F;Linux</span><br></pre></td></tr></table></figure>
+
+<p>sudo pacman -S linux59-headers linux59-virtualbox-host-modules virtualbox-host-dkms virtualbox</p>
+</li>
+<li><p>安装Vmware workstation</p>
+<p>安装VirtualBox时已经安装了linux59-headers模块</p>
+<p>sudo pacman -S vmware-workstation</p>
+<p>sudo modprobe -a vmw_vmci vmmon</p>
+<p>sudo systemctl enable vmware-networks.service  vmware-usbarbitrator.service </p>
+<p>sudo systemctl start  vmware-networks.service  vmware-usbarbitrator.service </p>
+</li>
+<li><p>安装微信，QQ</p>
+<p>sudo pacman -S base-devel yay</p>
+<p>yay -Sy</p>
+<p>yay -S com.qq.weixin.spark</p>
+<p>yay -S com.qq.tim.spark</p>
+<p>注意：如果缺失win字体，中文显示会异常，可以拷贝win下面的simsun.ttf,simsun.ttc字体至~/.deepinwine/Spark-WeChat/drive_c/windows/Fonts/</p>
+</li>
+<li><p>win字体安装</p>
+<p>最好是win下面的全部字体都拷贝出来一份</p>
+<p>sudo mkdir /usr/share/fonts/win-fonts</p>
+<p>sudo cp <code>所有字体文件</code> /usr/share/fonts/win-fonts/</p>
+<p>sudo fc-cache -fv</p>
+</li>
+<li><p>安装WPS</p>
+<p>yay -S wps-office wps-office-mui-zh-cn ttf-wps-fonts</p>
+<p>注意安装过程中出现以下应答项，一定选择2，这样下载速度会快很多。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">:: 有 2 个提供者可用于 wps-office:</span><br><span class="line">:: AUR 软件库</span><br><span class="line">    1) wps-office 2) wps-office-cn </span><br><span class="line"></span><br><span class="line">输入数字 (默认&#x3D;1): </span><br></pre></td></tr></table></figure></li>
+<li><p>安装Pycharm社区版</p>
+<p>sudo pacman -S pycharm-community-edition</p>
+</li>
+</ol>
+]]></content>
+  </entry>
+</search>
