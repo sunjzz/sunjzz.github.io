@@ -62,7 +62,7 @@
     </header>
     <div class="e-content entry" itemprop="articleBody">
       
-        <h1 id="Redis-5-集群节点环境误删恢复"><a href="#Redis-5-集群节点环境误删恢复" class="headerlink" title="Redis 5 集群节点环境误删恢复"></a>Redis 5 集群节点环境误删恢复</h1><p>背景：准生产五主五从高可用环境，运维人员误删其中一个节点的环境。（五主五从节点错开）比如铲掉的主机IP是192.168.1.5，节点7002</p>
+        <p>背景：准生产五主五从高可用环境，运维人员误删其中一个节点的环境。（五主五从节点错开）比如铲掉的主机IP是192.168.1.5，节点7002</p>
 <p>redis-cli -h 192.168.1.1 -p 7001 -a key@1234 </p>
 <p>CLUSTER FORGET node-id</p>
 <ol>
