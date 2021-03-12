@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   
@@ -7,7 +7,6 @@
   <meta name="author" content="摸鱼">
   
   <meta name="description" content="好记性不如烂笔头">
-  
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -18,75 +17,52 @@
     <meta property="og:image" content=""/>
   
 
-  <link rel="alternate" href="/enjoytech/atom.xml" title="jzz&#39;s Blog" type="application/atom+xml">
-  <link rel="stylesheet" href="/enjoytech/css/style.css" media="screen" type="text/css">
-  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <link rel="shortcut icon" href="/enjoytech/favicon.png">
+  
+  
+<link rel="stylesheet" href="/enjoytech/css/style.css">
 
-  <!-- favicon -->
-  <link rel="icon" type="image/x-icon" href="/enjoytech/favicon.ico">
-  <!-- Font-Awesome -->
-  <link rel="stylesheet" href="/enjoytech/font-awesome/css/font-awesome.min.css">
+  <!--[if lt IE 9]><script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script><![endif]-->
+  
 
 <meta name="generator" content="Hexo 5.4.0"></head>
 
-<body>
-  <header id="header"><div class= "header-content inner">
-	<div class = "alignleft col-one">
-		
-			<div class='avatar'>
-				<img src = "/img/default/avatar.png">
-              </div>
-		
-		<div class="header-div">
-		    <h1><a href="/enjoytech/">jzz&#39;s Blog</a></h1>
-		    <h2><a href="/enjoytech/"></a></h2>
-		</div>
-	</div>
-	<div class = "alignright col-two">
-		
-	</div>
-	<div class="clearfix"></div>
-</div>
 
-<div class= "header-nav">
-	<div class='header-nav-content inner'>
-		<div id="main-nav" class="alignleft">
-		    		
-		    		  <a href="/"><i class="fa fa-"></i>Home</a>
-		    		
-		    		  <a href="/archives"><i class="fa fa-"></i>Archives</a>
-		    		
-		</div>
-		<div id="sub-nav" class="alignright">
-		    
-		</div>
-	</div>
-	<div class="clearfix"></div>
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/enjoytech/">jzz&#39;s Blog</a></h1>
+  <h2><a href="/enjoytech/"></a></h2>
 </div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/enjoytech/">Home</a></li>
+    
+      <li><a href="/enjoytech/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
 </header>
-    <div id="content" class="inner">
-      <div id="main-col" class="alignleft"><div id="wrapper">
-    <article class="post">
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper">
+  <article id="post-Django模型操作" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   
   <div class="post-content">
     <header>
+      
         <div class="icon"></div>
-        
-        <time datetime="2021-03-12T06:12:13.033Z"><a href="/enjoytech/2021/03/12/Django模型操作/">2021-03-12</a></time>
-        
+        <time class="dt-published" datetime="2021-03-12T06:12:13.033Z"><a href="/enjoytech/2021/03/12/Django%E6%A8%A1%E5%9E%8B%E6%93%8D%E4%BD%9C/">2021-03-12</a></time>
+      
+      
   
-    <h1 class="title"><a href="/enjoytech/2021/03/12/Django模型操作/">Django模型操作</a></h1>
+    <h1 class="title"><a href="/enjoytech/2021/03/12/Django%E6%A8%A1%E5%9E%8B%E6%93%8D%E4%BD%9C/">Django模型操作</a></h1>
   
 
     </header>
-
-    <div class="entry">
+    <div class="e-content entry" itemprop="articleBody">
       
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1"><span class="toc-text">创建对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E8%88%AC%E6%83%85%E5%86%B5"><span class="toc-text">一般情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%96%E9%94%AE%E7%BA%A6%E6%9D%9F%E6%83%85%E5%86%B5"><span class="toc-text">外键约束情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E5%AF%B9%E5%A4%9A%E6%83%85%E5%86%B5"><span class="toc-text">多对多情况</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E6%89%80%E6%9C%89%E5%AF%B9%E8%B1%A1"><span class="toc-text">查询所有对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%93%BE%E5%BC%8F%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="toc-text">链式过滤器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8B%AC%E4%B8%80%E6%97%A0%E4%BA%8C"><span class="toc-text">独一无二</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%83%B0%E6%80%A7%E6%9C%BA%E5%88%B6"><span class="toc-text">惰性机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6"><span class="toc-text">缓存机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%AF%E8%BF%AD%E4%BB%A3"><span class="toc-text">可迭代</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E5%8D%95%E4%B8%80%E5%AF%B9%E8%B1%A1"><span class="toc-text">查询单一对象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E9%99%90%E5%88%B6%E6%9D%A1%E4%BB%B6%E5%A4%9A%E4%B8%AA%E5%AF%B9%E8%B1%A1"><span class="toc-text">查询限制条件多个对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%87%E7%89%87"><span class="toc-text">切片</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%A6%E8%BF%87%E6%BB%A4%E6%9D%A1%E4%BB%B6"><span class="toc-text">带过滤条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%92%E5%BA%8F"><span class="toc-text">排序</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B7%A8%E5%85%B3%E7%B3%BB%E6%9F%A5%E8%AF%A2"><span class="toc-text">跨关系查询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E5%AD%97%E6%AE%B5%E6%9F%A5%E8%AF%A2"><span class="toc-text">模型字段查询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%8D%E6%9D%82%E6%9F%A5%E8%AF%A2"><span class="toc-text">复杂查询</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E8%81%94%E5%AF%B9%E8%B1%A1"><span class="toc-text">关联对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AD%A3%E5%90%91%E5%85%B3%E8%81%94"><span class="toc-text">正向关联</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8D%E5%90%91%E5%85%B3%E8%81%94"><span class="toc-text">反向关联</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E5%92%8C%E4%BF%AE%E6%94%B9"><span class="toc-text">删除和修改</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
-    </div>
-
         <p>上一篇我们已经将表结构通过model迁移至数据库，接下来我们就来通过操作对象的方式来操作数据库，为了方便演示，应用articles的models定义更改如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Account</span>(<span class="params">models.Model</span>):</span></span><br><span class="line">    username = models.CharField(max_length=<span class="number">64</span>, unique=<span class="literal">True</span>, verbose_name=<span class="string">&quot;用户名&quot;</span>)</span><br><span class="line">    email = models.EmailField(verbose_name=<span class="string">&quot;邮箱&quot;</span>)</span><br><span class="line">    password = models.CharField(max_length=<span class="number">128</span>, verbose_name=<span class="string">&quot;用户密码&quot;</span>)</span><br><span class="line">    register_date = models.DateTimeField(auto_now_add=<span class="literal">True</span>, verbose_name=<span class="string">&quot;注册日期&quot;</span>)</span><br><span class="line">    signature = models.CharField(max_length=<span class="number">128</span>, blank=<span class="literal">True</span>, null=<span class="literal">True</span>, verbose_name=<span class="string">&quot;签名&quot;</span>)</span><br><span class="line">    avatar = models.ImageField(upload_to=<span class="string">&#x27;static/image/&#x27;</span>, default=<span class="string">&#x27;static/image/default.jpg&#x27;</span>,</span><br><span class="line">                               verbose_name=<span class="string">&quot;用户图像&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Article</span>(<span class="params">models.Model</span>):</span></span><br><span class="line">    title = models.CharField(max_length=<span class="number">100</span>, verbose_name=<span class="string">&quot;文章标题&quot;</span>)</span><br><span class="line">    content = models.TextField(blank=<span class="literal">True</span>, null=<span class="literal">True</span>, verbose_name=<span class="string">&quot;博客正文&quot;</span>)</span><br><span class="line">    account = models.ForeignKey(<span class="string">&#x27;Account&#x27;</span>, on_delete=models.CASCADE, related_name=<span class="string">&#x27;art&#x27;</span>)</span><br><span class="line">    tags = models.ManyToManyField(<span class="string">&#x27;Tag&#x27;</span>, null=<span class="literal">True</span>, verbose_name=<span class="string">&quot;博客标签&quot;</span>)</span><br><span class="line">    pub_date = models.DateTimeField(auto_now_add=<span class="literal">True</span>, verbose_name=<span class="string">&quot;发表时间&quot;</span>)</span><br><span class="line">    read_count = models.IntegerField(verbose_name=<span class="string">&quot;阅读量&quot;</span>, null=<span class="literal">True</span>)</span><br><span class="line">    like = models.IntegerField(verbose_name=<span class="string">&quot;点赞量&quot;</span>, null=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Tag</span>(<span class="params">models.Model</span>):</span></span><br><span class="line">    name = models.CharField(max_length=<span class="number">64</span>, unique=<span class="literal">True</span>, verbose_name=<span class="string">&#x27;标签名称&#x27;</span>)</span><br><span class="line">    date = models.DateTimeField(auto_now_add=<span class="literal">True</span>, verbose_name=<span class="string">&#x27;创建时间&#x27;</span>)</span><br></pre></td></tr></table></figure>
 
@@ -252,12 +228,11 @@
     </footer>
   </div>
 </article>
-<!-- 返回顶部 -->
-<div id="toTop">
-	<a href="#">▲</a>
-	<a href="#footer">▼</a>
-</div>
- 
+
+
+
+
+
 <nav id="pagination">
   
     <a href="/enjoytech/page/7/" class="alignleft prev">上一页</a>
@@ -266,101 +241,52 @@
     <a href="/enjoytech/page/9/" class="alignright next">下一页</a>
   
   <div class="clearfix"></div>
-</nav>
-</div></div>
-      <aside id="sidebar" class="alignright">
-        
-           <div class="search">
-  <form action="/enjoytech/search/index.html" method="get" accept-charset="utf-8">
-<!--     <input type="search" name="wd"results="0" placeholder="搜索">
-    <input type="hidden" name="wd" value="site:initcode.gitee.io/enjoytech"> -->
-     <input type="text" id="search" class="st-default-search-input" placeholder="搜索" style="height: 100%" />
+</nav></div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//baidu.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="as_sitesearch" value="initcode.gitee.io/enjoytech">
   </form>
-</div> 
-        
-           
-
-        
-          <div class="widget tag">
-  <h3 class="title">微信公众账号</h3>
-    <ul class="entry">
-      <img src="/img/default/qrcode.jpg" alt="欢迎关注个人公众账号" style= "width: 100%">
-    </ul>
-</div>
-        
-          <div class="widget tag">
-  <h3 class="title">日历云</h3>
-  <div id="calendar"></div>
 </div>
 
-        
-          
-  <div class="widget tag">
-    <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/enjoytech/archives/2021/">公元 2021 年</a><span class="archive-list-count">11</span></li></ul>
-  </div>
 
-        
-      </aside>
-      <div class="clearfix"></div>
-    </div>
-  <footer id="footer"><div class="footer-content inner">
-  <div class="alignleft">
   
-    &copy; 2021 摸鱼
-    
-  </div>
-  <div class="alignright">
-    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
-    <a target="_blank" rel="noopener" href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
-  </div>
 
-  <div>
-    Hosted by <a target="_blank" rel="noopener" href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a>
-  </div>
   
-  <div class="clearfix"></div>
-</div></footer>
-  <script src="/enjoytech/js/jquery.min.js"></script>
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2021 摸鱼
+  
+</div>
+<div class="clearfix"></div></footer>
+  
+<script src="/enjoytech/js/jquery-3.4.1.min.js"></script>
+
+
 <script src="/enjoytech/js/jquery.imagesloaded.min.js"></script>
+
+
 <script src="/enjoytech/js/gallery.js"></script>
 
-<!-- calendar widget -->
-
-  <script src="/enjoytech/js/calendar.js"></script>
-  <script src="/enjoytech/js/languages.js"></script>
-  <script type="text/javascript">
-    $(function() {
-    
-      $('#calendar').aCalendar('zh-CN',{single:, root:'calendar'});
-    
-    });
-  </script>
 
 
-<!-- 百度统计 -->
-
-	<script>
-	var _hmt = _hmt || [];
-	(function() {
-	  var hm = document.createElement("script");
-	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
-	  var s = document.getElementsByTagName("script")[0]; 
-	  s.parentNode.insertBefore(hm, s);
-	})();
-	</script>
 
 
-<!-- fancybox -->
 
-<link rel="stylesheet" href="/enjoytech/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<link rel="stylesheet" href="/enjoytech/fancybox/jquery.fancybox.css">
+
+
 <script src="/enjoytech/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
+
+<script>
 (function($){
   $('.fancybox').fancybox();
 })(jQuery);
 </script>
-
 
 </body>
 </html>

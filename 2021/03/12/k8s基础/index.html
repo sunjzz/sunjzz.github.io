@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   
@@ -7,7 +7,6 @@
   <meta name="author" content="摸鱼">
   
   <meta name="description" content="好记性不如烂笔头">
-  
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
@@ -18,74 +17,51 @@
     <meta property="og:image" content=""/>
   
 
-  <link rel="alternate" href="/enjoytech/atom.xml" title="jzz&#39;s Blog" type="application/atom+xml">
-  <link rel="stylesheet" href="/enjoytech/css/style.css" media="screen" type="text/css">
-  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <link rel="shortcut icon" href="/enjoytech/favicon.png">
+  
+  
+<link rel="stylesheet" href="/enjoytech/css/style.css">
 
-  <!-- favicon -->
-  <link rel="icon" type="image/x-icon" href="/enjoytech/favicon.ico">
-  <!-- Font-Awesome -->
-  <link rel="stylesheet" href="/enjoytech/font-awesome/css/font-awesome.min.css">
+  <!--[if lt IE 9]><script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script><![endif]-->
+  
 
 <meta name="generator" content="Hexo 5.4.0"></head>
 
-<body>
-  <header id="header"><div class= "header-content inner">
-	<div class = "alignleft col-one">
-		
-			<div class='avatar'>
-				<img src = "/img/default/avatar.png">
-              </div>
-		
-		<div class="header-div">
-		    <h1><a href="/enjoytech/">jzz&#39;s Blog</a></h1>
-		    <h2><a href="/enjoytech/"></a></h2>
-		</div>
-	</div>
-	<div class = "alignright col-two">
-		
-	</div>
-	<div class="clearfix"></div>
-</div>
 
-<div class= "header-nav">
-	<div class='header-nav-content inner'>
-		<div id="main-nav" class="alignleft">
-		    		
-		    		  <a href="/"><i class="fa fa-"></i>Home</a>
-		    		
-		    		  <a href="/archives"><i class="fa fa-"></i>Archives</a>
-		    		
-		</div>
-		<div id="sub-nav" class="alignright">
-		    
-		</div>
-	</div>
-	<div class="clearfix"></div>
+<body>
+  <header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/enjoytech/">jzz&#39;s Blog</a></h1>
+  <h2><a href="/enjoytech/"></a></h2>
 </div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/enjoytech/">Home</a></li>
+    
+      <li><a href="/enjoytech/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
 </header>
-    <div id="content" class="inner">
-      <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article id="post-k8s基础" class="h-entry post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   
   <div class="post-content">
     <header>
+      
         <div class="icon"></div>
-        
-        <time datetime="2021-03-12T06:12:13.037Z"><a href="/enjoytech/2021/03/12/k8s基础/">2021-03-12</a></time>
-        
+        <time class="dt-published" datetime="2021-03-12T06:12:13.037Z"><a href="/enjoytech/2021/03/12/k8s%E5%9F%BA%E7%A1%80/">2021-03-12</a></time>
+      
+      
   
-    <h1 class="title">k8s基础</h1>
+    <h1 class="p-name title" itemprop="headline name">k8s基础</h1>
   
 
     </header>
-
-    <div class="entry">
+    <div class="e-content entry" itemprop="articleBody">
       
-        
-    <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Docker-%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B"><span class="toc-text">Docker 网络模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E7%BB%84%E4%BB%B6"><span class="toc-text">核心组件</span></a></li></ol></li></ol>
-    </div>
-
         <p>4组核心的Dockerfile指令</p>
 <ul>
 <li><p>USER/WORKDIR 指令</p>
@@ -172,112 +148,96 @@
         
         
         
-  <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a title="分享到QQ空间" href="#" class="bds_qzone" data-cmd="qzone"></a><a title="分享到新浪微博" href="#" class="bds_tsina" data-cmd="tsina"></a><a title="分享到腾讯微博" href="#" class="bds_tqq" data-cmd="tqq"></a><a title="分享到人人网" href="#" class="bds_renren" data-cmd="renren"></a><a title="分享到微信" href="#" class="bds_weixin" data-cmd="weixin"></a></div>
-  <script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"1","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+      <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+      <a class="addthis_button_google_plusone" g:plusone:size="medium"></a>
+    
+    
+      <a class="addthis_button_pinterest_pinit" pi:pinit:layout="horizontal"></a>
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script src="//s7.addthis.com/js/300/addthis_widget.js"></script>
 
       
       <div class="clearfix"></div>
     </footer>
   </div>
 </article>
-<!-- 返回顶部 -->
-<div id="toTop">
-	<a href="#">▲</a>
-	<a href="#footer">▼</a>
-</div></div></div>
-      <aside id="sidebar" class="alignright">
-        
-           <div class="search">
-  <form action="/enjoytech/search/index.html" method="get" accept-charset="utf-8">
-<!--     <input type="search" name="wd"results="0" placeholder="搜索">
-    <input type="hidden" name="wd" value="site:initcode.gitee.io/enjoytech"> -->
-     <input type="text" id="search" class="st-default-search-input" placeholder="搜索" style="height: 100%" />
+
+
+<section id="comment">
+  <h1 class="title">留言</h1>
+
+  
+      <div id="fb-root"></div>
+<script>
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=123456789012345";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+</script>
+
+<div class="fb-comments" data-href="https://initcode.gitee.io/enjoytech/2021/03/12/k8s%E5%9F%BA%E7%A1%80/index.html" data-num-posts="5" data-width="840" data-colorscheme="light"></div>
+      
+  
+</section>
+
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//baidu.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="搜索">
+    <input type="hidden" name="as_sitesearch" value="initcode.gitee.io/enjoytech">
   </form>
-</div> 
-        
-           
-
-        
-          <div class="widget tag">
-  <h3 class="title">微信公众账号</h3>
-    <ul class="entry">
-      <img src="/img/default/qrcode.jpg" alt="欢迎关注个人公众账号" style= "width: 100%">
-    </ul>
-</div>
-        
-          <div class="widget tag">
-  <h3 class="title">日历云</h3>
-  <div id="calendar"></div>
 </div>
 
-        
-          
-  <div class="widget tag">
-    <h3 class="title">归档</h3>
-	<ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/enjoytech/archives/2021/">公元 2021 年</a><span class="archive-list-count">11</span></li></ul>
-  </div>
 
-        
-      </aside>
-      <div class="clearfix"></div>
-    </div>
-  <footer id="footer"><div class="footer-content inner">
-  <div class="alignleft">
   
-    &copy; 2021 摸鱼
-    
-  </div>
-  <div class="alignright">
-    Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>, Theme
-    <a target="_blank" rel="noopener" href="https://github.com/pengloo53/Hexo-theme-light_cn">light_cn</a>
-  </div>
 
-  <div>
-    Hosted by <a target="_blank" rel="noopener" href="https://pages.coding.me" style="font-weight: bold">Coding Pages</a>
-  </div>
   
-  <div class="clearfix"></div>
-</div></footer>
-  <script src="/enjoytech/js/jquery.min.js"></script>
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2021 摸鱼
+  
+</div>
+<div class="clearfix"></div></footer>
+  
+<script src="/enjoytech/js/jquery-3.4.1.min.js"></script>
+
+
 <script src="/enjoytech/js/jquery.imagesloaded.min.js"></script>
+
+
 <script src="/enjoytech/js/gallery.js"></script>
 
-<!-- calendar widget -->
-
-  <script src="/enjoytech/js/calendar.js"></script>
-  <script src="/enjoytech/js/languages.js"></script>
-  <script type="text/javascript">
-    $(function() {
-    
-      $('#calendar').aCalendar('zh-CN',{single:, root:'calendar'});
-    
-    });
-  </script>
 
 
-<!-- 百度统计 -->
-
-	<script>
-	var _hmt = _hmt || [];
-	(function() {
-	  var hm = document.createElement("script");
-	  hm.src = "//hm.baidu.com/hm.js?9acf0cedd48dc53be256ede5a98c2aaa";
-	  var s = document.getElementsByTagName("script")[0]; 
-	  s.parentNode.insertBefore(hm, s);
-	})();
-	</script>
 
 
-<!-- fancybox -->
 
-<link rel="stylesheet" href="/enjoytech/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<link rel="stylesheet" href="/enjoytech/fancybox/jquery.fancybox.css">
+
+
 <script src="/enjoytech/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
+
+<script>
 (function($){
   $('.fancybox').fancybox();
 })(jQuery);
 </script>
-
 
 </body>
 </html>
