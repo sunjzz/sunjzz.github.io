@@ -177,8 +177,8 @@ body {
 body {
   background: var(--body-bg-color);
   color: var(--text-color);
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
-  font-size: 14px;
+  font-family: 'Times New Romen', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 1em;
   line-height: 2;
 }
 @media (max-width: 991px) {
@@ -193,7 +193,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: 'Times New Romen', "PingFang SC", "Microsoft YaHei", sans-serif;
   font-weight: bold;
   line-height: 1.5;
   margin: 20px 0 15px;
@@ -282,7 +282,7 @@ kbd {
 table {
   border-collapse: collapse;
   border-spacing: 0;
-  font-size: 14px;
+  font-size: 0.875em;
   margin: 0 0 20px 0;
   width: 100%;
 }
@@ -317,7 +317,7 @@ td {
   border-radius: 0;
   color: var(--btn-default-color);
   display: inline-block;
-  font-size: 14px;
+  font-size: 0.875em;
   line-height: 2;
   padding: 0 20px;
   text-decoration: none;
@@ -384,8 +384,8 @@ td {
 }
 .highlight,
 pre {
-  background: #002b36;
-  color: #93a1a1;
+  background: #262626;
+  color: #9e9e9e;
   line-height: 1.6;
   margin: 0 auto 20px;
 }
@@ -402,7 +402,7 @@ code {
   word-wrap: break-word;
 }
 .highlight *::selection {
-  background: #073642;
+  background: #303030;
 }
 .highlight pre {
   border: 0;
@@ -419,19 +419,19 @@ code {
   padding: 0;
 }
 .highlight figcaption {
-  background: #002b36;
-  color: #93a1a1;
+  background: #262626;
+  color: #9e9e9e;
   display: flex;
-  font-size: 14px;
+  font-size: 0.875em;
   justify-content: space-between;
   line-height: 1.2;
   padding: 0.5em;
 }
 .highlight figcaption a {
-  color: #93a1a1;
+  color: #9e9e9e;
 }
 .highlight figcaption a:hover {
-  border-bottom-color: #93a1a1;
+  border-bottom-color: #9e9e9e;
 }
 .highlight .gutter {
   -moz-user-select: none;
@@ -440,14 +440,14 @@ code {
   user-select: none;
 }
 .highlight .gutter pre {
-  background: #002b36;
-  color: #586e75;
+  background: #262626;
+  color: #6a6a6a;
   padding-left: 10px;
   padding-right: 10px;
   text-align: right;
 }
 .highlight .code pre {
-  background: #002b36;
+  background: #262626;
   padding-left: 10px;
   width: 100%;
 }
@@ -463,8 +463,8 @@ pre {
 }
 pre code {
   background: none;
-  color: #93a1a1;
-  font-size: 14px;
+  color: #9e9e9e;
+  font-size: 0.875em;
   padding: 0;
   text-shadow: none;
 }
@@ -475,14 +475,14 @@ pre .addition {
   background: #008000;
 }
 pre .meta {
-  color: #b58900;
+  color: #a68f01;
   -moz-user-select: none;
   -ms-user-select: none;
   -webkit-user-select: none;
   user-select: none;
 }
 pre .comment {
-  color: #586e75;
+  color: #6a6a6a;
 }
 pre .variable,
 pre .attribute,
@@ -497,7 +497,7 @@ pre .html .doctype,
 pre .css .id,
 pre .css .class,
 pre .css .pseudo {
-  color: #dc322f;
+  color: #ff511a;
 }
 pre .number,
 pre .preprocessor,
@@ -507,7 +507,7 @@ pre .literal,
 pre .params,
 pre .constant,
 pre .command {
-  color: #cb4b16;
+  color: #dd7202;
 }
 pre .ruby .class .title,
 pre .css .rules .attribute,
@@ -520,11 +520,11 @@ pre .ruby .symbol,
 pre .xml .cdata,
 pre .special,
 pre .formula {
-  color: #859900;
+  color: #4ca340;
 }
 pre .title,
 pre .css .hexcolor {
-  color: #2aa198;
+  color: #07a38f;
 }
 pre .function,
 pre .python .decorator,
@@ -534,11 +534,11 @@ pre .ruby .title .keyword,
 pre .perl .sub,
 pre .javascript .title,
 pre .coffeescript .title {
-  color: #268bd2;
+  color: #3294ff;
 }
 pre .keyword,
 pre .javascript .function {
-  color: #6c71c4;
+  color: #cc62fe;
 }
 .blockquote-center {
   border-left: none;
@@ -985,14 +985,14 @@ pre .javascript .function {
   color: var(--brand-hover-color);
 }
 .site-title {
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: 'Times New Romen', "PingFang SC", "Microsoft YaHei", sans-serif;
   font-size: 1.375em;
   font-weight: normal;
   margin: 0;
 }
 .site-subtitle {
   color: #999;
-  font-size: 14px;
+  font-size: 0.8125em;
   margin: 10px 0;
 }
 .use-motion .brand {
@@ -1063,7 +1063,7 @@ pre .javascript .function {
 .menu-item span.exturl {
   border-bottom: 0;
   display: block;
-  font-size: 14px;
+  font-size: 0.8125em;
   transition-property: border-color;
   transition-delay: 0s;
   transition-duration: 0.2s;
@@ -1150,7 +1150,7 @@ pre .javascript .function {
 }
 .site-description {
   color: #999;
-  font-size: $font-size-medium;
+  font-size: 1em;
   margin-top: 5px;
   text-align: center;
 }
@@ -1161,14 +1161,14 @@ pre .javascript .function {
 .links-of-author span.exturl {
   border-bottom-color: #555;
   display: inline-block;
-  font-size: 14px;
+  font-size: 0.8125em;
   margin-bottom: 10px;
   margin-right: 10px;
   vertical-align: middle;
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #0f261a;
+  background: #040aff;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -1205,11 +1205,11 @@ pre .javascript .function {
   color: #fff;
 }
 .links-of-blogroll {
-  font-size: 14px;
+  font-size: 0.8125em;
   margin-top: 10px;
 }
 .links-of-blogroll-title {
-  font-size: 14px;
+  font-size: 0.875em;
   font-weight: 600;
   margin-top: 0;
 }
@@ -1249,7 +1249,7 @@ pre .javascript .function {
   color: #666;
   cursor: pointer;
   display: inline-block;
-  font-size: 14px;
+  font-size: 0.875em;
 }
 .sidebar-nav li.sidebar-nav-overview {
   margin-left: 10px;
@@ -1294,7 +1294,7 @@ pre .javascript .function {
   background: #87daff;
 }
 .post-toc {
-  font-size: 14px;
+  font-size: 0.875em;
 }
 .post-toc ol {
   list-style: none;
@@ -1359,17 +1359,17 @@ pre .javascript .function {
 }
 .site-state-item-count {
   display: block;
-  font-size: 16px;
+  font-size: 1.25em;
   font-weight: 600;
   text-align: center;
 }
 .site-state-item-name {
   color: inherit;
-  font-size: 14px;
+  font-size: 0.875em;
 }
 .footer {
   color: #999;
-  font-size: 14px;
+  font-size: 0.875em;
   padding: 20px 0;
 }
 .footer.footer-fixed {
@@ -1396,7 +1396,7 @@ pre .javascript .function {
 }
 .languages {
   display: inline-block;
-  font-size: 15px;
+  font-size: 1.125em;
   position: relative;
 }
 .languages .lang-select-label span {
@@ -1494,10 +1494,7 @@ pre .javascript .function {
   position: fixed;
   transition-property: bottom;
   z-index: 1300;
-  width: 24px;
-}
-.back-to-top span {
-  display: none;
+  width: initial;
 }
 .back-to-top:hover {
   color: #87daff;
@@ -1512,23 +1509,23 @@ pre .javascript .function {
   }
 }
 .post-body {
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: 'Times New Romen', "PingFang SC", "Microsoft YaHei", sans-serif;
   overflow-wrap: break-word;
   word-wrap: break-word;
 }
 @media (min-width: 1200px) {
   .post-body {
-    font-size: 15px;
+    font-size: 1.125em;
   }
 }
 .post-body .exturl .fa {
-  font-size: 14px;
+  font-size: 0.875em;
   margin-left: 4px;
 }
 .post-body .image-caption,
 .post-body .figure .caption {
   color: #999;
-  font-size: 14px;
+  font-size: 0.875em;
   font-weight: bold;
   line-height: 1;
   margin: -20px auto 15px;
@@ -1567,7 +1564,7 @@ pre .javascript .function {
   }
 }
 .posts-collapse .collection-title {
-  font-size: 15px;
+  font-size: 1.125em;
   position: relative;
 }
 .posts-collapse .collection-title::before {
@@ -1584,7 +1581,7 @@ pre .javascript .function {
   width: 10px;
 }
 .posts-collapse .collection-year {
-  font-size: $font-size-largest;
+  font-size: 1.5em;
   font-weight: bold;
   margin: 60px 0;
   position: relative;
@@ -1628,7 +1625,7 @@ pre .javascript .function {
   left: 0;
   margin-left: -4px;
   position: absolute;
-  top: $font-size-smallest;
+  top: 0.75em;
   transition-property: background;
   width: 6px;
   transition-delay: 0s;
@@ -1643,7 +1640,7 @@ pre .javascript .function {
 }
 .posts-collapse .post-meta {
   display: inline;
-  font-size: $font-size-smallest;
+  font-size: 0.75em;
   margin-right: 10px;
 }
 .posts-collapse .post-title {
@@ -1655,7 +1652,7 @@ pre .javascript .function {
   color: var(--link-color);
 }
 .posts-collapse .post-title .fa-external-link-alt {
-  font-size: 14px;
+  font-size: 0.875em;
   margin-left: 5px;
 }
 .posts-collapse::before {
@@ -1769,10 +1766,10 @@ pre .javascript .function {
   margin: 0;
 }
 .posts-expand .post-header {
-  font-size: 15px;
+  font-size: 1.125em;
 }
 .posts-expand .post-title {
-  font-size: $font-size-largest;
+  font-size: 1.5em;
   font-weight: normal;
   margin: initial;
   text-align: center;
@@ -1805,18 +1802,18 @@ pre .javascript .function {
   visibility: visible;
 }
 .posts-expand .post-title-link .fa-external-link-alt {
-  font-size: 14px;
+  font-size: 0.875em;
   margin-left: 5px;
 }
 .posts-expand .post-meta {
   color: #999;
-  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
-  font-size: $font-size-smallest;
+  font-family: 'Times New Romen', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 0.75em;
   margin: 3px 0 60px 0;
   text-align: center;
 }
 .posts-expand .post-meta .post-description {
-  font-size: 14px;
+  font-size: 0.875em;
   margin-top: 2px;
 }
 .posts-expand .post-meta time {
@@ -1856,7 +1853,7 @@ pre .javascript .function {
 .post-nav-item a {
   border-bottom: none;
   display: block;
-  font-size: 14px;
+  font-size: 0.875em;
   line-height: 1.6;
   position: relative;
 }
@@ -1864,7 +1861,7 @@ pre .javascript .function {
   top: 2px;
 }
 .post-nav-item .fa {
-  font-size: $font-size-smallest;
+  font-size: 0.75em;
 }
 .post-nav-item:first-child {
   margin-right: 15px;
@@ -1902,7 +1899,7 @@ pre .javascript .function {
 }
 .post-tags a {
   display: inline-block;
-  font-size: 14px;
+  font-size: 0.8125em;
 }
 .post-tags a:not(:last-child) {
   margin-right: 10px;
@@ -1921,7 +1918,7 @@ pre .javascript .function {
 }
 .social-like {
   display: flex;
-  font-size: 14px;
+  font-size: 0.875em;
   justify-content: center;
   text-align: center;
 }
@@ -2114,7 +2111,7 @@ pre .javascript .function {
   }
 }
 ul.breadcrumb {
-  font-size: $font-size-smallest;
+  font-size: 0.75em;
   list-style: none;
   margin: 1em 0;
   padding: 0 2em;
