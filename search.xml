@@ -1,6 +1,334 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title></title>
+    <url>/enjoytech/2021/03/12/Django%E6%A8%A1%E5%9E%8B%E6%93%8D%E4%BD%9C/</url>
+    <content><![CDATA[<p>上一篇我们已经将表结构通过model迁移至数据库，接下来我们就来通过操作对象的方式来操作数据库，为了方便演示，应用articles的models定义更改如下：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Account</span>(<span class="params">models.Model</span>):</span></span><br><span class="line">    username = models.CharField(max_length=<span class="number">64</span>, unique=<span class="literal">True</span>, verbose_name=<span class="string">&quot;用户名&quot;</span>)</span><br><span class="line">    email = models.EmailField(verbose_name=<span class="string">&quot;邮箱&quot;</span>)</span><br><span class="line">    password = models.CharField(max_length=<span class="number">128</span>, verbose_name=<span class="string">&quot;用户密码&quot;</span>)</span><br><span class="line">    register_date = models.DateTimeField(auto_now_add=<span class="literal">True</span>, verbose_name=<span class="string">&quot;注册日期&quot;</span>)</span><br><span class="line">    signature = models.CharField(max_length=<span class="number">128</span>, blank=<span class="literal">True</span>, null=<span class="literal">True</span>, verbose_name=<span class="string">&quot;签名&quot;</span>)</span><br><span class="line">    avatar = models.ImageField(upload_to=<span class="string">&#x27;static/image/&#x27;</span>, default=<span class="string">&#x27;static/image/default.jpg&#x27;</span>,</span><br><span class="line">                               verbose_name=<span class="string">&quot;用户图像&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Article</span>(<span class="params">models.Model</span>):</span></span><br><span class="line">    title = models.CharField(max_length=<span class="number">100</span>, verbose_name=<span class="string">&quot;文章标题&quot;</span>)</span><br><span class="line">    content = models.TextField(blank=<span class="literal">True</span>, null=<span class="literal">True</span>, verbose_name=<span class="string">&quot;博客正文&quot;</span>)</span><br><span class="line">    account = models.ForeignKey(<span class="string">&#x27;Account&#x27;</span>, on_delete=models.CASCADE, related_name=<span class="string">&#x27;art&#x27;</span>)</span><br><span class="line">    tags = models.ManyToManyField(<span class="string">&#x27;Tag&#x27;</span>, null=<span class="literal">True</span>, verbose_name=<span class="string">&quot;博客标签&quot;</span>)</span><br><span class="line">    pub_date = models.DateTimeField(auto_now_add=<span class="literal">True</span>, verbose_name=<span class="string">&quot;发表时间&quot;</span>)</span><br><span class="line">    read_count = models.IntegerField(verbose_name=<span class="string">&quot;阅读量&quot;</span>, null=<span class="literal">True</span>)</span><br><span class="line">    like = models.IntegerField(verbose_name=<span class="string">&quot;点赞量&quot;</span>, null=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Tag</span>(<span class="params">models.Model</span>):</span></span><br><span class="line">    name = models.CharField(max_length=<span class="number">64</span>, unique=<span class="literal">True</span>, verbose_name=<span class="string">&#x27;标签名称&#x27;</span>)</span><br><span class="line">    date = models.DateTimeField(auto_now_add=<span class="literal">True</span>, verbose_name=<span class="string">&#x27;创建时间&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>说明一下，对于articles这个应用虽然只定义了对应三张表关系映射的三个类，但当我们执行完迁移操作，会自动生成四张表，多出来的那张表就是文章与标签之间ManyToMany关系的中间表。</p>
+<p>首先进入项目的根目录,执行<code>python manage.py shell</code>,下面的操作都将在此环境中演示.</p>
+<h2 id="创建对象"><a href="#创建对象" class="headerlink" title="创建对象"></a>创建对象</h2><h3 id="一般情况"><a href="#一般情况" class="headerlink" title="一般情况"></a>一般情况</h3><p>1.直接创建</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.create(username = <span class="string">&#x27;moyu&#x27;</span>, email = <span class="string">&#x27;moyu@aliyun.com&#x27;</span>, password = <span class="string">&#x27;123456&#x27;</span>)</span><br><span class="line">&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;	   <span class="comment">#这里（1）表示的是数据库主键id为1</span></span><br></pre></td></tr></table></figure>
+
+<p>还可以通过字典方式创建：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;user_info = &#123;<span class="string">&#x27;username&#x27;</span>:<span class="string">&#x27;moyu2&#x27;</span>, <span class="string">&#x27;email&#x27;</span>:<span class="string">&#x27;moyu2@aliyun.com&#x27;</span>, <span class="string">&#x27;password&#x27;</span>:<span class="string">&#x27;123456&#x27;</span>&#125;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.create(**user_info)</span><br><span class="line">&lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;</span><br></pre></td></tr></table></figure>
+
+<p>2.先生成对象再创建</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;obj = models.Account(username = <span class="string">&#x27;moyu5&#x27;</span>, email = <span class="string">&#x27;moyu5@aliyun.com&#x27;</span>, password = <span class="string">&#x27;654321&#x27;</span>)</span><br><span class="line">&gt;&gt;&gt;obj</span><br><span class="line">&lt;Account: Account <span class="built_in">object</span> (<span class="literal">None</span>)&gt;        <span class="comment">#数据并没有落库，所以显示None</span></span><br><span class="line">&gt;&gt;&gt;obj.save()</span><br><span class="line">&gt;&gt;&gt;obj							<span class="comment">#数据已保存至数据库</span></span><br><span class="line">&lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="外键约束情况"><a href="#外键约束情况" class="headerlink" title="外键约束情况"></a>外键约束情况</h3><p>对于有外键约束关系的表再新增数据的时候也有两种方式：</p>
+<p>1.生成对象，通过id方式关联</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;articles_info = &#123;<span class="string">&quot;title&quot;</span>: <span class="string">&quot;摸鱼&quot;</span>, <span class="string">&quot;content&quot;</span>:<span class="string">&quot;摸鱼今天很帅&quot;</span>&#125;</span><br><span class="line">&gt;&gt;&gt;a = modes.Article(**articles_info)</span><br><span class="line">&gt;&gt;&gt;a.account_id = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>这里指定account_id, 1就是上面我们在account表里新增的第一条主键id为1的那条记录的对象</p>
+<p>2.生成对象，然后通过对象关联。承上：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a.ccount = obj	 <span class="comment">#这个obj就是上面在创建account时生成的对象</span></span><br><span class="line">&gt;&gt;&gt;a.save()</span><br></pre></td></tr></table></figure>
+
+<h3 id="多对多情况"><a href="#多对多情况" class="headerlink" title="多对多情况"></a>多对多情况</h3><p>在tag表里按照上面的方式创建几条数据。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a.tags.<span class="built_in">set</span>([<span class="number">1</span>,<span class="number">2</span>])	    <span class="comment">#给当前的这个对象的tags设置标签，标签以列表的方式传入，关联的就是tag表的主键id。set等于是赋值操作</span></span><br><span class="line">&gt;&gt;&gt;a.save()</span><br><span class="line">&gt;&gt;&gt;a.tags.add(<span class="number">3</span>,<span class="number">4</span>)           <span class="comment">#追加标签</span></span><br><span class="line">&gt;&gt;&gt;a.save()</span><br></pre></td></tr></table></figure>
+
+<p>当然它还有<code>create()</code>方法用于创建一个新对象，并将其放入关联对象的集合中，<code>remove()</code>方法用于删除指定关联对象，<code>clear()</code>方法删除所有对象。</p>
+<h2 id="查询所有对象"><a href="#查询所有对象" class="headerlink" title="查询所有对象"></a>查询所有对象</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">all</span>()	<span class="comment">#返回的一个包含所有Account对象的QuerySet对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这里要说明一个QuerySet代表来自数据库中对象的一个集合，这里方法all()就是一个包含Account表所有对象的QuerySet对象。可以通过filter和exclude来添加过滤条件进行过滤和反向过滤。</p>
+<p>比如：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(username=<span class="string">&#x27;moyu&#x27;</span>)	       <span class="comment">#用户名为moyu用户</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.exclude(username=<span class="string">&#x27;moyu&#x27;</span>)	    <span class="comment">#用户名不为moyu的用户</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<p>QuerySet对象有以下特性:</p>
+<h3 id="链式过滤器"><a href="#链式过滤器" class="headerlink" title="链式过滤器"></a>链式过滤器</h3><p>上面的示例也可以等价写成：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">all</span>().<span class="built_in">filter</span>(username=<span class="string">&#x27;moyu&#x27;</span>)</span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">all</span>().exclude(username=<span class="string">&#x27;moyu&#x27;</span>)</span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<p>通过这种写法，我们也知道了对QuerySet对象进行过滤的结果仍然是一个QuerySet对象。</p>
+<h3 id="独一无二"><a href="#独一无二" class="headerlink" title="独一无二"></a>独一无二</h3><p>每个QuerySet对象都是独一无二的，比如：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;q1 = models.Account.objects.<span class="built_in">all</span>()</span><br><span class="line">&gt;&gt;&gt;q2 = q1.<span class="built_in">filter</span>(username=<span class="string">&#x27;moyu&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>q1，q2是彼此独立的，q1不受q2的过滤影响</p>
+<h3 id="惰性机制"><a href="#惰性机制" class="headerlink" title="惰性机制"></a>惰性机制</h3><p>创建QuerySet不会和数据库发生任何交互，只有在它被计算时才会执行查询数据库操作。比如：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;q1 = models.Account.objects.<span class="built_in">all</span>()	 <span class="comment">#这一步不会和数据库发生交互</span></span><br><span class="line">&gt;&gt;&gt;q1	<span class="comment">#这一步执行才会和数据库发生交互，执行完返回了所有Account对象的QuerySet对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="缓存机制"><a href="#缓存机制" class="headerlink" title="缓存机制"></a>缓存机制</h3><p>q1这个QuerySet对象在第一次和数据库发生交互后，其值会被缓存起来，之后再次使用q1时不会再次和数据库发生交互，可以反复使用。但不是所有的情况都会缓存结果，比如使用切片或查询QuerySet的子集的部分数据则不会缓存。比如：</p>
+<p>第一种情况：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;q1 = models.Account.objects.<span class="built_in">all</span>()</span><br><span class="line">&gt;&gt;&gt;q1[<span class="number">2</span>]	<span class="comment">#访问数据库</span></span><br><span class="line">&lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;</span><br><span class="line">&gt;&gt;&gt;q1[<span class="number">2</span>]	<span class="comment">#再次访问数据库</span></span><br><span class="line">&lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;</span><br></pre></td></tr></table></figure>
+
+<p>第二种情况：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;q1 = models.Account.objects.<span class="built_in">all</span>()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>[userinfo <span class="keyword">for</span> userinfo <span class="keyword">in</span> q1]</span><br><span class="line">[&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;]</span><br><span class="line">&gt;&gt;&gt;q1[<span class="number">2</span>]</span><br><span class="line">&lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;</span><br><span class="line">&gt;&gt;&gt;q1[<span class="number">2</span>]</span><br><span class="line">&lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="可迭代"><a href="#可迭代" class="headerlink" title="可迭代"></a>可迭代</h3><p>q1这个QuerySet对象和python的列表和元组类似，语法基本一致，支持切片。</p>
+<p>注意的是QuerySet对象不推荐使用len()方法计算元素个数，而推荐使用count()方法来计算元素个数，这种方式效率更高。也不推荐使用bool()方法判断它是否为空，而是推荐使用exists()方法来判断，这种方式效率更高。</p>
+<h2 id="查询单一对象"><a href="#查询单一对象" class="headerlink" title="查询单一对象"></a>查询单一对象</h2><p>我们可以通过get()方法来查询单个对象：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a1 = models.Account.objects.get(<span class="built_in">id</span>=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<p>然而，我们上面学习到filter()方法，如果我们写成:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a2 = models.Account.objects.<span class="built_in">filter</span>(<span class="built_in">id</span>=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<p>a1和a2等价吗？结果是否定的，因为a1拿到的是模型id=1这个用户实例的对象，而a2是filter()方法过滤的，得到的一个QuerySet对象，即使这个QuerySet对象里面只有一个元素。需要注意的是使用filter()、exclude()方法操作返回的始终是一个QuerySet对象。</p>
+<p>另外当a1的get()拿不到对象时，Django会抛出DoesNotExist异常，而同样条件下的a2则不会报错，而是返回一个空的QuerySet对象。</p>
+<p>这里说明一下，Django支持主键查询，因为id就是account这张表的主键，所以上面的也可以写成：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a1 = models.Account.objects.get(pk=<span class="number">1</span>)</span><br><span class="line">&gt;&gt;&gt;a2 = models.Account.objects.get(pk=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="查询限制条件多个对象"><a href="#查询限制条件多个对象" class="headerlink" title="查询限制条件多个对象"></a>查询限制条件多个对象</h2><h3 id="切片"><a href="#切片" class="headerlink" title="切片"></a>切片</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;q1 = models.Account.objects.<span class="built_in">all</span>()[:<span class="number">2</span>]      <span class="comment">#返回包含前两个对象的QuerySet对象</span></span><br></pre></td></tr></table></figure>
+
+<p>需要注意，和Python列表相比，操作它时下标必须为非负整数。另外有一个特殊情况:</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">all</span>()[<span class="number">1</span>:<span class="number">5</span>:<span class="number">2</span>]</span><br><span class="line">[&lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;]</span><br></pre></td></tr></table></figure>
+
+<p>这样使用了步长的操作返回的就是一个列表，而不再是QuerySet对象。</p>
+<h3 id="带过滤条件"><a href="#带过滤条件" class="headerlink" title="带过滤条件"></a>带过滤条件</h3><p><strong>exact</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;q1 = models.Account.objects.<span class="built_in">filter</span>(username__exact=<span class="string">&#x27;moyu&#x27;</span>)</span><br><span class="line">&gt;&gt;&gt;q2 = models.Account.objects.<span class="built_in">filter</span>(username=<span class="string">&#x27;moyu&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>q1和q2等价，这里exact是大小写敏感，有iexact表示大小写不敏感</p>
+<p><strong>in</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(id__in=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])	 <span class="comment">#用户ID在列表[1,2,3]里面的对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(pk__in=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>])	<span class="comment">#与上面等价</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>gt, gte, lt, lte</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(id__gt=<span class="number">3</span>)		<span class="comment">#用户ID大于3的对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(id__gte=<span class="number">3</span>)	<span class="comment">#用户ID大于等于3的对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(id__lt=<span class="number">3</span>)		 <span class="comment">#用户ID小于3的对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(id__lte=<span class="number">3</span>)	 <span class="comment">#用户ID小于等于3的对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]</span><br></pre></td></tr></table></figure>
+
+<p><strong>contains, startswith, endswith</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(id__lte=<span class="number">3</span>, username__contains=<span class="string">&#x27;oy&#x27;</span>)	<span class="comment">#用于ID小于等于3并且用户名包含字符串moyu的对象，这里contains是大小写敏感</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(id__lte=<span class="number">3</span>, username__icontains=<span class="string">&#x27;Oy&#x27;</span>)	<span class="comment">#用于ID小于等于3并且用户名包含字符串moyu的对象，这里icontains是大小写不敏感</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(id__lte=<span class="number">3</span>, username__startswith=<span class="string">&#x27;mo&#x27;</span>)	<span class="comment">#用户ID小于等于3并且是以用户名是以字符串moyu开头的对象，同样有istartswith表示大小写不敏感</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(id__lte=<span class="number">3</span>, username__endswith=<span class="string">&#x27;yu&#x27;</span>)     <span class="comment">#用户ID小于等于3并且是以用户名是以字符串moyu结尾的对象，同样有iendswith表示大小写不敏感</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这里说明一下多个限制条件就用逗号隔开，相当于SQL里面的AND。</p>
+<p><strong>range</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(register_date__range=(<span class="string">&#x27;2021-01-28&#x27;</span>, <span class="string">&#x27;2021-01-29&#x27;</span>))	<span class="comment">#用户注册时间在2021-01-28至2021-01-29的对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<p>注意register_date是一个datetime类型，过滤的条件写的是date格式，实际在查询的时候会转换成2021-01-29 00:00:00，显然这个不包含2021-01-29那天的用户。</p>
+<p><strong>date, year, month, day, hour, minute, second, week, week_day</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(register_date__date=<span class="string">&#x27;2021-01-28&#x27;</span>) 	 <span class="comment">#用户注册时间在2021-01-28日的对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(register_date__year=<span class="number">2021</span>) 		    <span class="comment">#用户注册时间在2021年的对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(register_date__year__gte=<span class="number">2021</span>) 	      <span class="comment">#用户注册时间大于等于2021年的对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(register_date__month=<span class="number">1</span>) 			 <span class="comment">#用户注册时间在5月的对象（每年的5月）</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(register_date__day=<span class="number">30</span>)			 <span class="comment">#用户注册时间在30号的对象（每年每月的30号）</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(register_date__hour=<span class="number">0</span>) 			  <span class="comment">#用户注册时间在0点的对象，同样还支持minute，second</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(register_date__week=<span class="number">5</span>)			 <span class="comment">#用户注册时间在每年第5周的对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(register_date__week_day=<span class="number">3</span>)		  <span class="comment">#用户注册时间在每周二的对象 ，Sunday(1) --&gt; Staturday(7)</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>isnull</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(register_date__isnull=<span class="literal">True</span>)	<span class="comment">#用户注册时间为空的对象</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>regex</strong></p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(username__regex=<span class="string">r&#x27;^(m|z)&#x27;</span>)        <span class="comment">#用户注册用户名以m者z开头的的对象，大小写敏感，同样有__iregex用法</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">5</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>models.Account.objects.<span class="built_in">filter</span>(pk__gt=<span class="number">2</span>)		<span class="comment">#主键id大于2的用户对象</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(pk__gt=<span class="number">2</span>).order_by(<span class="string">&#x27;-register_date&#x27;</span>)	<span class="comment">#主键id大于2且以注册时间降序返回用户对象，使用order_by指定字段默认时升序，加个-表示降序。</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<p>还可以使用？表示随机排序，比如：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(pk__gte=<span class="number">2</span>).order_by(<span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(pk__gte=<span class="number">2</span>).order_by(<span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(pk__gte=<span class="number">2</span>).order_by(<span class="string">&#x27;?&#x27;</span>)</span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">2</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<p>还可以使用reverse()方法来反向返回查询的顺序，需要注意的是该方法一般只在有定义顺序的QuerySet上调用，比如定义了默认顺序或者使用了order_by()，如果没有定义排序，那么使用该方法也将没有意义。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(pk__gt=<span class="number">2</span>).order_by(<span class="string">&#x27;register_date&#x27;</span>)</span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(pk__gt=<span class="number">2</span>).order_by(<span class="string">&#x27;register_date&#x27;</span>).reverse()</span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">4</span>)&gt;, &lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]&gt;</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(pk__gt=<span class="number">2</span>).order_by(<span class="string">&#x27;register_date&#x27;</span>).reverse()[:<span class="number">1</span>]	<span class="comment">#取排序后的最后一个对象（QuerySet切片不支持负整数）</span></span><br><span class="line">&lt;QuerySet [&lt;Account: Account <span class="built_in">object</span> (<span class="number">3</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="跨关系查询"><a href="#跨关系查询" class="headerlink" title="跨关系查询"></a>跨关系查询</h2><p>这个就类似SQL中的JOIN操作，比如上面Articles类的account字段外键关联Account类，那么我们可以有如下操作：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a1 = models.Article.objects.<span class="built_in">filter</span>(account__username=<span class="string">&#x27;moyu&#x27;</span>)	      <span class="comment">#查询发表文章的所有者account的username为moyu的所有文章对象</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到跨模型查询操作时使用关联字段名account，字段名由双下划线分割，这里字段用的是username。</p>
+<p>也可以反向跨关系查询，默认情况使用模型的小写名称在查找中引用反向关系，比如：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a2 = models.Account.objects.<span class="built_in">filter</span>(article__content__contains=<span class="string">&#x27;摸鱼今天很帅&#x27;</span>)	<span class="comment">#查找文章内容包含”摸鱼今天很帅“的作者</span></span><br></pre></td></tr></table></figure>
+
+<p>当然你也可以继续使用关联字段，跨关系深度不受限制。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a3 = models.Account.objects.<span class="built_in">filter</span>(article__tags__name=<span class="string">&quot;生活&quot;</span>)				<span class="comment">#查找文章标签名有”生活“的作者</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="模型字段查询"><a href="#模型字段查询" class="headerlink" title="模型字段查询"></a>模型字段查询</h2><p>上面学习的都是filter()都是模型字段与常量做比较，Django提供一种模型字段与同一模型的另一字段做比较查询。这个就是F()</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;<span class="keyword">from</span> django.db.models <span class="keyword">import</span> F	<span class="comment"># 导入F类</span></span><br><span class="line">&gt;&gt;&gt;a1 = models.Article.objects.<span class="built_in">filter</span>(read_count__gt=F(<span class="string">&#x27;like&#x27;</span>) * <span class="number">2</span> )        <span class="comment">#返回阅读量大于两倍点赞量的所有文章的对象</span></span><br></pre></td></tr></table></figure>
+
+<p>甚至F()还支持通过双下划线跨关系查询。例如要查询所有文章标签与文章作者名字相同的文章对象：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a2 = models.Article.objects.<span class="built_in">filter</span>(account__username=F(<span class="string">&#x27;tags__name&#x27;</span>))</span><br></pre></td></tr></table></figure>
+
+<h2 id="复杂查询"><a href="#复杂查询" class="headerlink" title="复杂查询"></a>复杂查询</h2><p>上面再学习filter()时我们知道，如果需要同时满足多个条件时，只需要使用逗号就可以，类似于SQL里写where条件的and操作，那怎么进行or操作呢？这就需要使用Django为我们提供的Q()。Q对象能通过 &amp; 和| 操作符连接起来。当操作符被用于两个Q对象之间时会生成一个新的Q对象。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;<span class="keyword">from</span> django.db.models <span class="keyword">import</span> Q 	<span class="comment">#导入Q类</span></span><br><span class="line">&gt;&gt;&gt;a3 = models.Account.objects.<span class="built_in">filter</span>(Q(username\__startswith=<span class="string">&#x27;moyu&#x27;</span>) | Q(email__endswith=<span class="string">&#x27;aliyun.com&#x27;</span>))	<span class="comment">#返回用户名以&#x27;moyu&#x27;开头的的对象或者用户邮箱是以&#x27;aliyun.com&#x27;结尾的对象</span></span><br></pre></td></tr></table></figure>
+
+<p>上面的|换成&amp;就是且的关系。Q对象还可以通过~支持反转操作，比如：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a4 = models.Account.objects.<span class="built_in">filter</span>(Q(username__startswith=<span class="string">&#x27;moyu&#x27;</span>) | ~Q(email__endswith=<span class="string">&#x27;aliyun.com&#x27;</span>))	        <span class="comment">#返回用户名以&#x27;moyu&#x27;开头的的对象或者用户邮箱不是以&#x27;aliyun.com&#x27;结尾的对象</span></span><br></pre></td></tr></table></figure>
+
+<p>我们还可以混合使用Q对象和关键字参数进行更复杂的查询操作，比如：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a5 = models.Account.objects.<span class="built_in">filter</span>(Q(register_date=<span class="string">&#x27;2021-01-29&#x27;</span>)| Q(register_date=<span class="string">&#x27;2021-01-30&#x27;</span>), username__startswith=<span class="string">&#x27;moyu&#x27;</span>)	<span class="comment">#返回用户名以&#x27;moyu&#x27;开头的并且用户注册时间是2021-01-29或者2021-01-30号的对象</span></span><br></pre></td></tr></table></figure>
+
+<p>这里需要注意如果查询提供了Q对象和关键字参数，Q对象必须位于所有关键字参数之前。下面这种写法是不生效的，且会抛出异常：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a6 = models.Account.objects.<span class="built_in">filter</span>(username__startswith=<span class="string">&#x27;moyu&#x27;</span>, Q(register_date=<span class="string">&#x27;2021-01-29&#x27;</span>)| Q(register_date=<span class="string">&#x27;2021-01-30&#x27;</span>))</span><br><span class="line">  File <span class="string">&quot;&lt;console&gt;&quot;</span>, line <span class="number">1</span></span><br><span class="line">    a6 = models.Account.objects.<span class="built_in">filter</span>(username__startswith=<span class="string">&#x27;moyu&#x27;</span>, Q(register_date=<span class="string">&#x27;2021-01-29&#x27;</span>)| Q(register_date=<span class="string">&#x27;2021-01-30&#x27;</span>))</span><br><span class="line">                                                                                                                                ^</span><br><span class="line">SyntaxError: positional argument follows keyword argument</span><br></pre></td></tr></table></figure>
+
+<h2 id="关联对象"><a href="#关联对象" class="headerlink" title="关联对象"></a>关联对象</h2><p>如果我们是通过get()方法则会得到一个model的对象，那么同样我们可以在一对多关联，多对多关联的情况下进行有关操作。</p>
+<h3 id="正向关联"><a href="#正向关联" class="headerlink" title="正向关联"></a>正向关联</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;a1 = models.Article.objects.get(pk=<span class="number">1</span>)</span><br><span class="line">&gt;&gt;&gt;a1.account		  <span class="comment">#通过a1的account属性拿到该文章关联的Account对象</span></span><br><span class="line">&lt;Account: Account <span class="built_in">object</span> (<span class="number">1</span>)&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="反向关联"><a href="#反向关联" class="headerlink" title="反向关联"></a>反向关联</h3><p>同样，我们可以在关联对象的另一边拿到有关对象，比如通过一个Account对象拿到与之关联的所有的Article对象</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;u1 = models.Account.objects.get(pk=<span class="number">1</span>)</span><br><span class="line">&gt;&gt;&gt;u1.article_set.<span class="built_in">all</span>()</span><br><span class="line">&lt;QuerySet [&lt;Article: Article <span class="built_in">object</span> (<span class="number">1</span>)&gt;, &lt;Article: Article <span class="built_in">object</span> (<span class="number">2</span>)&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<p>注意，这里默认的类名是模型名小写加_set查询，返回的是一个QuerySet对象。可以在ForeignKey时设置related_name参数重写这个类名。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Article</span>(<span class="params">models.Model</span>):</span> </span><br><span class="line">    ......   </span><br><span class="line">    account = models.ForeignKey(<span class="string">&#x27;Account&#x27;</span>, on_delete=models.CASCADE, related_name=<span class="string">&#x27;art&#x27;</span>)</span><br><span class="line">    ......</span><br></pre></td></tr></table></figure>
+
+<p>上面的就可以改写成：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;u1.art.<span class="built_in">all</span>()</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是一对一关系比较特殊，它的反向关联查询时返回的仅仅是一个对象，而不是一个只包含一个对象的QuerySet对象。</p>
+<h2 id="删除和修改"><a href="#删除和修改" class="headerlink" title="删除和修改"></a>删除和修改</h2><p>掌握了上面的一堆查询操作，删除和修改就比较容易了。下面就来两个示例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(username=<span class="string">&#x27;moyu5&#x27;</span>).delete()</span><br><span class="line">(<span class="number">1</span>, &#123;<span class="string">&#x27;articles.Account&#x27;</span>: <span class="number">1</span>&#125;)</span><br><span class="line">&gt;&gt;&gt;models.Account.objects.<span class="built_in">filter</span>(username=<span class="string">&#x27;moyu4&#x27;</span>).update(password=<span class="string">&#x27;135246&#x27;</span>)</span><br><span class="line"><span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>其他ORM框架要求在模型的两边都定义关联关系，而Django仅要求在模型的一边定义关联关系即可，这是因为Django开发者认为这违反DRY原则，而Django之所以能这样，是因为在项目的settings.py有INSTALLED_APPS配置定义了项目的各个应用注册。而Django会帮忙持续追踪这些关联，并且在关联模型导入时添加关联关系。所以我们在项目开发过程中一定不要忘记在这里添加应用注册 ，否则反向关联将不能正常工作。</li>
+<li>ORM并不是万金油，毕竟是基于原生SQL做了封装，它所生成的代码还是要转成SQL语句来操作，会牺牲一定的性能。所以在复杂场景下我们还是需要DBA帮忙写一条很牛逼的SQL。但在绝大部分场景下它还是有其存在的价值。</li>
+</ol>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/enjoytech/2021/03/12/Redis%205%20%E9%9B%86%E7%BE%A4%E8%8A%82%E7%82%B9%E7%8E%AF%E5%A2%83%E8%AF%AF%E5%88%A0%E6%81%A2%E5%A4%8D/</url>
+    <content><![CDATA[<h1 id="Redis-5-集群节点环境误删恢复"><a href="#Redis-5-集群节点环境误删恢复" class="headerlink" title="Redis 5 集群节点环境误删恢复"></a>Redis 5 集群节点环境误删恢复</h1><p>背景：准生产五主五从高可用环境，运维人员误删其中一个节点的环境。（五主五从节点错开）比如铲掉的主机IP是192.168.1.5，节点7002</p>
+<p>redis-cli -h 192.168.1.1 -p 7001 -a key@1234 </p>
+<p>CLUSTER FORGET node-id</p>
+<ol>
+<li>将其他节点的安装环境拷贝过去，更改节点配置文件BIND的IP</li>
+<li>rm -f dump.rdb redis.log redis.pid</li>
+<li>sh redis.sh start</li>
+<li>redis-cli -a redis@1024 –cluster add-node –cluster-slave –cluster-master-id ef90a8e72abddd026b3486ad12d712a37227fdd4 192.168.1.5:7002 192.168.1.4:7001</li>
+</ol>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/enjoytech/2021/03/12/docker%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<p>docker-ce 安装</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo yum-config-manager --add-repo http:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;docker-ce&#x2F;linux&#x2F;centos&#x2F;docker-ce.repo</span><br><span class="line">yum list docker-ce --show-duplicates</span><br><span class="line">sudo yum install -y docker-ce</span><br><span class="line">sudo systemctl enable docker</span><br><span class="line">sudo systemctl start docker</span><br><span class="line">vim &#x2F;etc&#x2F;docker&#x2F;daemon.json</span><br></pre></td></tr></table></figure>
+
+<p>配置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim &#x2F;etc&#x2F;docker&#x2F;daemon.json</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line">    &quot;graph&quot;: &quot;data&#x2F;docker&quot;,	#工作目录</span><br><span class="line">    &quot;storage-driver&quot;: &quot;overlay2&quot;, #存储驱动</span><br><span class="line">    &quot;insecure-registries&quot;: [&quot;registry.access.redhat.com&quot;, &quot;quay.io&quot;], #私有仓库</span><br><span class="line">    &quot;registry-mirrors&quot;: [&quot;https:&#x2F;&#x2F;xfbr090w.mirror.aliyuncs.com&quot;], # 阿里云加速镜像源</span><br><span class="line">    &quot;bip&quot;: &quot;172.7.5.1&#x2F;24&quot;,	# 172开头 + 宿主机的最后两位 + 1&#x2F;24 生产经验，快速定位</span><br><span class="line">    &quot;exec-opts&quot;: [&quot;native.cgroupdriver&#x3D;systemd&quot;], # cgroup 是 google2017写到内核里用于控制cpu和内存的方法, cgroup驱动是systemd</span><br><span class="line">    &quot;live-restore&quot;: true # docker容器引擎死掉 用容器引擎起来的容器还能存活 不依赖容器引擎服务</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重载服务</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl start docker</span><br><span class="line"></span><br><span class="line"># 启动失败，仔细检查daemon.json文件是否有误。sudo systemctl reset-failed docker</span><br></pre></td></tr></table></figure>
+
+<p>检查服务</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker info</span><br><span class="line">sudo docker run hello-world</span><br><span class="line">四步：</span><br><span class="line">To generate this message, Docker took the following steps:</span><br><span class="line"> 1. The Docker client contacted the Docker daemon.</span><br><span class="line"> 2. The Docker daemon pulled the &quot;hello-world&quot; image from the Docker Hub.</span><br><span class="line">    (amd64)</span><br><span class="line"> 3. The Docker daemon created a new container from that image which runs the</span><br><span class="line">    executable that produces the output you are currently reading.</span><br><span class="line"> 4. The Docker daemon streamed that output to the Docker client, which sent it</span><br><span class="line">    to your terminal.</span><br></pre></td></tr></table></figure>
+
+<p>仓库地址</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https:&#x2F;&#x2F;hub.docker.com</span><br><span class="line"></span><br><span class="line">sudo docker login docker.io</span><br><span class="line"></span><br><span class="line">cat ~&#x2F;.docker&#x2F;config.json</span><br><span class="line"></span><br><span class="line">里面auth base64加密的字符串  echo 字符串|base64 -d 明文</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="镜像管理"><a href="#镜像管理" class="headerlink" title="镜像管理"></a>镜像管理</h2><p>搜索镜像</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker search alpine # alpine linux的发行版</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>下载镜像</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker pull alpine # 拉取镜像</span><br><span class="line">sudo docker pull alpine:3.10.3 # 拉取指定版本</span><br><span class="line"></span><br><span class="line">docker.io&#x2F;library&#x2F;alpine:latest</span><br><span class="line">镜像结构：registry_name&#x2F;repository_name&#x2F;image_name:tag_name</span><br></pre></td></tr></table></figure>
+
+<p>查看本地镜像</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker image</span><br><span class="line">docker image ls</span><br></pre></td></tr></table></figure>
+
+<p>给镜像打标签</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker tag bf756fb1ae65 docker.io&#x2F;jiangzhengzhong&#x2F;alpine:v3.x</span><br></pre></td></tr></table></figure>
+
+<p>推送镜像</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker push docker.io&#x2F;jiangzhengzhong&#x2F;alpine:v3.x</span><br></pre></td></tr></table></figure>
+
+<p>删除镜像</p>
+ <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker rmi docker.io&#x2F;jianghub&#x2F;alpine:v3.x  # 删除tag</span><br><span class="line">sudo docker rmi bf756fb1ae65</span><br><span class="line">sudo docker rmi -f bf756fb1ae65 # 强制删除 </span><br></pre></td></tr></table></figure>
+
+<h2 id="容器管理"><a href="#容器管理" class="headerlink" title="容器管理"></a>容器管理</h2><p>查看本地容器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker ps -a</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动容器"><a href="#启动容器" class="headerlink" title="启动容器"></a>启动容器</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker run [OPTION] IMAGE [COMMAND] [ARG...]</span><br><span class="line">OPTION:</span><br><span class="line">    -i: 表示启动可交互容器，并持续打开标准输入</span><br><span class="line">    -t：表示使用终端关联到容器的标准输入输出</span><br><span class="line">    -d：表示将容器放置后台运行</span><br><span class="line">    -rm：退出后即删除容器</span><br><span class="line">    -name：表示定义容器唯一名称</span><br><span class="line">IMAGE： 表示要运行的镜像</span><br><span class="line">COMMAND： 表示启动容器时要运行的命令</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>启动一个交互式容器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker run -it --name demo docker.io&#x2F;library&#x2F;alpine:latest &#x2F;bin&#x2F;sh</span><br><span class="line">&#x2F; # cat &#x2F;etc&#x2F;issue </span><br><span class="line">Welcome to Alpine Linux 3.13</span><br><span class="line">Kernel \r on an \m (\l)</span><br><span class="line"></span><br><span class="line">&#x2F; # ip a</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN qlen 1000</span><br><span class="line">    link&#x2F;loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1&#x2F;8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">8: eth0@if9: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue state UP </span><br><span class="line">    link&#x2F;ether 02:42:ac:0b:0b:02 brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet 172.11.11.2&#x2F;24 brd 172.11.11.255 scope global eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+
+<p>加上 <code>--rm</code> 参数，容器结束后自动删除</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker run --rm --name demo2 docker.io&#x2F;library&#x2F;alpine:latest &#x2F;bin&#x2F;echo hello</span><br></pre></td></tr></table></figure>
+
+<p>启动一个非交互后台容器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker run -d --name demo3 docker.io&#x2F;library&#x2F;alpine:latest</span><br><span class="line">sudo docker run -d --name demo3 docker.io&#x2F;library&#x2F;alpine:latest &#x2F;bin&#x2F;sleep 60</span><br><span class="line"></span><br><span class="line">[vagrant@node01 docker]$ sudo docker ps -a</span><br><span class="line">CONTAINER ID   IMAGE           COMMAND           CREATED              STATUS                          PORTS     NAMES</span><br><span class="line">8e8553dd2d86   alpine:latest   &quot;&#x2F;bin&#x2F;sleep 60&quot;   7 seconds ago        Up 6 seconds                              demo4</span><br><span class="line">d05e83dc384c   alpine:latest   &quot;&#x2F;bin&#x2F;sh&quot;         About a minute ago   Exited (0) About a minute ago             demo3</span><br><span class="line">bef89248bb20   alpine:latest   &quot;&#x2F;bin&#x2F;sh&quot;         9 minutes ago        Exited (0) 8 minutes ago                  demo</span><br><span class="line">cf61e2a85f89   hello-world     &quot;&#x2F;hello&quot;          2 hours ago          Exited (0) 2 hours ago                    gallant_mclaren</span><br><span class="line">[vagrant@node01 docker]$ ps -ef|grep sleep</span><br><span class="line">root     26639 26617  0 15:41 ?        00:00:00 &#x2F;bin&#x2F;sleep 60</span><br><span class="line">vagrant  26712  2111  0 15:42 pts&#x2F;0    00:00:00 grep --color&#x3D;auto sleep</span><br><span class="line"></span><br><span class="line">宿主机能看到sleep这个命令的进程</span><br></pre></td></tr></table></figure>
+
+<p>进入容器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[vagrant@node01 docker]$ sudo docker exec -it 8e8553dd2d86 &#x2F;bin&#x2F;sh</span><br><span class="line">&#x2F; # </span><br><span class="line">&#x2F; # cat &#x2F;etc&#x2F;issue </span><br><span class="line">Welcome to Alpine Linux 3.13</span><br><span class="line">Kernel \r on an \m (\l)</span><br></pre></td></tr></table></figure>
+
+<p>停止 启动 重启容器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker stop 76fd376b61cc</span><br><span class="line">sudo docker start 76fd376b61cc</span><br><span class="line">sudo docker restart 76fd376b61cc</span><br></pre></td></tr></table></figure>
+
+<p>删除容器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker rm 76fd376b61cc</span><br><span class="line">sudo docker rm -f demo5</span><br></pre></td></tr></table></figure>
+
+<p>修改容器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker run -d --name demo jianghub&#x2F;alpine:v3.x &#x2F;bin&#x2F;sleep 600</span><br><span class="line">sudo docker exec -it demo &#x2F;bin&#x2F;sh</span><br><span class="line">echo &#39;hello,docker&#39; &gt; info</span><br><span class="line">exit</span><br><span class="line">sudo docker commit -p demo jianghub&#x2F;alpine:v3.x_with_info	# -p参数表示这个保持快照 不接受这个动作期间别的数据修改</span><br><span class="line">sudo docker images</span><br><span class="line">sudo docker run -it --name mypine jianghub&#x2F;alpine:v3.x_with_info &#x2F;bin&#x2F;sh</span><br><span class="line">&#x2F; # cat info </span><br><span class="line">hello,docker</span><br><span class="line">文件存在，持久化成功</span><br><span class="line"></span><br><span class="line">for i in $(sudo docker ps -a|grep -i exit|awk &#39;&#123;print $1&#125;&#39;);do sudo docker rm -f $i;done</span><br><span class="line">删除所有已退出的容器</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>导出容器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo sh -c &#39;docker save 697bfb335045 &gt; alpine:v3.x_with_info.tar&#39;</span><br></pre></td></tr></table></figure>
+
+<p>导入容器</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo docker load &lt; alpine\:v3.x_with_info.tar</span><br><span class="line">sudo docker tag 697bfb335045 jianghub&#x2F;alpine:v3.x_with_info</span><br><span class="line">sudo docker run -it --rm --name myalpine jianghub&#x2F;alpine:v3.x_with_info &#x2F;bin&#x2F;sh</span><br><span class="line">&#x2F; # cat info </span><br><span class="line">hello,docker</span><br></pre></td></tr></table></figure>
+
+<p>查看日志</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[vagrant@node01 docker]$ sudo docker run hello-world</span><br><span class="line">[vagrant@node01 docker]$ </span><br><span class="line">[vagrant@node01 docker]$ sudo docker ps -a</span><br><span class="line">CONTAINER ID   IMAGE                  COMMAND            CREATED          STATUS                      PORTS     NAMES</span><br><span class="line">41e1f29764c1   hello-world            &quot;&#x2F;hello&quot;           4 seconds ago    Exited (0) 3 seconds ago              determined_wu</span><br><span class="line">b175664b7721   jianghub&#x2F;alpine:v3.x   &quot;&#x2F;bin&#x2F;sleep 600&quot;   25 minutes ago   Exited (0) 15 minutes ago             demo</span><br><span class="line">[vagrant@node01 docker]$ sudo docker logs -f 41e1f29764c1	# -f 参数动态输出</span><br><span class="line"></span><br><span class="line">Hello from Docker!</span><br><span class="line">This message shows that your installation appears to be working correctly.</span><br><span class="line"></span><br><span class="line">To generate this message, Docker took the following steps:</span><br><span class="line"> 1. The Docker client contacted the Docker daemon.</span><br><span class="line"> 2. The Docker daemon pulled the &quot;hello-world&quot; image from the Docker Hub.</span><br><span class="line">    (amd64)</span><br><span class="line"> 3. The Docker daemon created a new container from that image which runs the</span><br><span class="line">    executable that produces the output you are currently reading.</span><br><span class="line"> 4. The Docker daemon streamed that output to the Docker client, which sent it</span><br><span class="line">    to your terminal.</span><br><span class="line"></span><br><span class="line">To try something more ambitious, you can run an Ubuntu container with:</span><br><span class="line"> $ docker run -it ubuntu bash</span><br><span class="line"></span><br><span class="line">Share images, automate workflows, and more with a free Docker ID:</span><br><span class="line"> https:&#x2F;&#x2F;hub.docker.com&#x2F;</span><br><span class="line"></span><br><span class="line">For more examples and ideas, visit:</span><br><span class="line"> https:&#x2F;&#x2F;docs.docker.com&#x2F;get-started&#x2F;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="高级操作"><a href="#高级操作" class="headerlink" title="高级操作"></a>高级操作</h2><p>映射端口</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -p 容器外端口:容器内端口</span><br><span class="line"></span><br><span class="line">sudo docker pull nginx</span><br><span class="line">sudo docker tag f6d0b4767a6c jianghub&#x2F;nginx:v1.18</span><br><span class="line">sudo docker run --rm -d --name mynginx -p 81:80 jianghub&#x2F;nginx:v1.18 </span><br></pre></td></tr></table></figure>
+
+<p>挂载数据卷</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -v 容器外目录：容器内目录</span><br><span class="line"></span><br><span class="line">sudo docker run -d --rm --name myweb -p 82:80 -v &#x2F;home&#x2F;vagrant&#x2F;html&#x2F;:&#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html jianghub&#x2F;nginx:v1.18</span><br><span class="line">sudo docker inspect myweb	</span><br></pre></td></tr></table></figure>
+
+<p>传递环境变量</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker run -e 环境变量key&#x3D;环境变量value</span><br><span class="line"></span><br><span class="line">[vagrant@node01 ~]$ sudo docker run --rm --name myenv jianghub&#x2F;alpine:v3.x printenv</span><br><span class="line">PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin</span><br><span class="line">HOSTNAME&#x3D;4d0c02dda572</span><br><span class="line">HOME&#x3D;&#x2F;root</span><br><span class="line">[vagrant@node01 ~]$ sudo docker run --rm --name myenv -e E_OPTS&#x3D;abc jianghub&#x2F;alpine:v3.x printenv</span><br><span class="line">PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin</span><br><span class="line">HOSTNAME&#x3D;8b134c7dbd26</span><br><span class="line">E_OPTS&#x3D;abc</span><br><span class="line">HOME&#x3D;&#x2F;root</span><br><span class="line">[vagrant@node01 ~]$ sudo docker run --rm --name myenv -e E_OPTS&#x3D;abc -e C_OPTS&#x3D;123 jianghub&#x2F;alpine:v3.x printenv</span><br><span class="line">PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin</span><br><span class="line">HOSTNAME&#x3D;5b642210c285</span><br><span class="line">E_OPTS&#x3D;abc</span><br><span class="line">C_OPTS&#x3D;123</span><br><span class="line">HOME&#x3D;&#x2F;root</span><br></pre></td></tr></table></figure>
+
+<p>容器内安装软件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum&#x2F;apt-get等</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[vagrant@node01 ~]$ sudo docker exec -it myweb &#x2F;bin&#x2F;sh</span><br><span class="line"># tee &#x2F;etc&#x2F;apt&#x2F;sources.list &lt;&lt;EOF</span><br><span class="line">&gt; # 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释</span><br><span class="line">&gt; deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;debian&#x2F; buster main contrib non-free</span><br><span class="line">&gt; # deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;debian&#x2F; buster main contrib non-free</span><br><span class="line">&gt; deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;debian&#x2F; buster-updates main contrib non-free</span><br><span class="line">&gt; # deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;debian&#x2F; buster-updates main contrib non-free</span><br><span class="line">&gt; deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;debian&#x2F; buster-backports main contrib non-free</span><br><span class="line">&gt; # deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;debian&#x2F; buster-backports main contrib non-free</span><br><span class="line">&gt; deb https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;debian-security buster&#x2F;updates main contrib non-free</span><br><span class="line">&gt; # deb-src https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;debian-security buster&#x2F;updates main contrib non-free</span><br><span class="line">&gt; EOF</span><br><span class="line"># apt update</span><br><span class="line"># apt install vim</span><br><span class="line">[vagrant@node01 ~]$ docker ps -a</span><br><span class="line">CONTAINER ID   IMAGE                  COMMAND                  CREATED             STATUS                   PORTS                NAMES</span><br><span class="line">1a99941f16ac   jianghub&#x2F;nginx:v1.18   &quot;&#x2F;docker-entrypoint.…&quot;   About an hour ago   Up About an hour         0.0.0.0:82-&gt;80&#x2F;tcp   myweb</span><br><span class="line">[vagrant@node01 ~]$ sudo docker commit -p 1a99941f16ac jianghub&#x2F;nginx:with_vim</span><br><span class="line">[vagrant@node01 ~]$ sudo docker push jianghub&#x2F;nginx:with_vim </span><br><span class="line">The push refers to repository [docker.io&#x2F;jianghub&#x2F;nginx]</span><br><span class="line">569a2dc3da0b: Pushed </span><br><span class="line">85fcec7ef3ef: Mounted from library&#x2F;nginx </span><br><span class="line">3e5288f7a70f: Mounted from library&#x2F;nginx </span><br><span class="line">56bc37de0858: Mounted from library&#x2F;nginx </span><br><span class="line">1c91bf69a08b: Mounted from library&#x2F;nginx </span><br><span class="line">cb42413394c4: Mounted from library&#x2F;nginx </span><br><span class="line">with_vim: digest: sha256:adc895bd84a51ec1c8c19731cc8e032f7f7ab0e6affc6646bad27caf3121a064 size: 1574</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/enjoytech/2021/03/12/git%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/</url>
+    <content><![CDATA[<h2 id="Git版本管理工具"><a href="#Git版本管理工具" class="headerlink" title="Git版本管理工具"></a>Git版本管理工具</h2><p>常用命令：</p>
+<p>  git config –global user.email “<a href="mailto:&#x79;&#x6f;&#x75;&#x40;&#101;&#120;&#97;&#109;&#x70;&#x6c;&#101;&#46;&#99;&#x6f;&#109;">&#x79;&#x6f;&#x75;&#x40;&#101;&#120;&#97;&#109;&#x70;&#x6c;&#101;&#46;&#99;&#x6f;&#109;</a>“<br>  git config –global user.name “Your Name”</p>
+<ul>
+<li><p>git init    # 初始化，让git管理当前文件夹</p>
+</li>
+<li><p>git status     # 检测当前目录下文件的状态</p>
+<p>红色：工作区 </p>
+<p>绿色：暂存区</p>
+</li>
+<li><p>git add    #  工作区文件提交到暂存区</p>
+</li>
+<li><p>git commit -m ‘’    # 暂存区文件提交到版本库</p>
+</li>
+<li><p>git log    # 查看历史提交记录</p>
+</li>
+<li><p>git reset –hard 版本号     # 回滚版本号</p>
+</li>
+<li><p>git reflog     #  查看版本号动作记录</p>
+</li>
+<li><p>git reset –soft     # 版本库撤回至暂存区</p>
+</li>
+<li><p>git reset HEAD     # 暂存区撤回至工作区（修改文件后的状态）</p>
+<p>git reset HEAD 文件名 </p>
+</li>
+<li><p>git checkout     # 工作区撤回初始状态 （修改文件前的状态）</p>
+<p>git checkout – 文件名</p>
+</li>
+<li><p>git reset –mix 版本号    # 版本库撤回工作区</p>
+</li>
+<li><p>git reset –hard 版本号     # 版本库撤回工作区初始（修改文件前的状态） </p>
+</li>
+<li><p>git branch    # 当前分支</p>
+</li>
+<li><p>git branch dev    # 创建一个dev分支</p>
+</li>
+<li><p>git checkout dev     # 切换到dev分支</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout -b dev # 创建dev分支并切换到dev分支</span><br></pre></td></tr></table></figure>
+
+
+
+<p>合并分支：</p>
+<p>git checkout master</p>
+<p>git branch</p>
+<p>git merge bug     # 合并bug分支到master分支</p>
+<p>git branch -d bug     # 删除bug分支 </p>
+<p>git remote add origin <a href="https://github.com/">https://github.com/</a>…..     # 添加远程git仓库地址别名</p>
+<p>git push -u origin master        # 本地master分支推送至origin</p>
+<p>git clone  </p>
+<p>git pull origin master 这一句等同于：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git fetch origin master</span><br><span class="line">git merge origin&#x2F;master</span><br></pre></td></tr></table></figure>
+
+<p>git rebase -i HEAD~3 合并最近的3次提交记录</p>
+<p>git log </p>
+<p>git log –graph </p>
+<p>git log –graph –pretty=format:”%h %s”</p>
+<p>git rebase</p>
+<p>git pull </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git fetch origin dev</span><br><span class="line">git rebase origin&#x2F;dev</span><br></pre></td></tr></table></figure>
+
+
+
+<p>git tag -a v1 -m “第一版”</p>
+</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
     <title>Hello World</title>
     <url>/enjoytech/2021/03/12/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
@@ -16,6 +344,89 @@
 <h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
 
 <p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/enjoytech/2021/03/12/k8s%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<p>4组核心的Dockerfile指令</p>
+<ul>
+<li><p>USER/WORKDIR 指令</p>
+<p>docker里面进程使用的用户</p>
+<p>容器启动后所在的工作目录</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM jianghub&#x2F;nginx:v1.18</span><br><span class="line">USER nginx</span><br><span class="line">WORKDIR &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html</span><br></pre></td></tr></table></figure></li>
+<li><p>ADD/EXPOSE 指令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM jianghub&#x2F;nginx:v1.18</span><br><span class="line">ADD index.html &#x2F;usr&#x2F;share&#x2F;nginx&#x2F;html&#x2F;index.html</span><br><span class="line">EXPOSE 80	# EXPOSE指令只能配合-P使用才有效果</span><br><span class="line"></span><br><span class="line">docker build . -t jianghub&#x2F;nginx:v1.18_with_add</span><br><span class="line">docker run --rm -it --name mynginx -P jianghub&#x2F;nginx:v1.18_with_add &#x2F;bin&#x2F;bash</span><br><span class="line">nginx -g &quot;daemon off;&quot;</span><br><span class="line">docker run --rm -d --name mynginx -P jianghub&#x2F;nginx:v1.18_with_add</span><br></pre></td></tr></table></figure></li>
+<li><p>RUN/ENV 指令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM centos:7</span><br><span class="line">ENV VER 9.11.4-26.P2.el7_9.3</span><br><span class="line">RUN yum install bind-$VER -y</span><br><span class="line"></span><br><span class="line">docker build . -t centos7:with_run</span><br><span class="line">docker run --rm -it --name mycentos centos7:with_run &#x2F;bin&#x2F;bash</span><br><span class="line">[root@463b50876ff4 &#x2F;]# rpm -qa|grep bind</span><br><span class="line">bind-libs-lite-9.11.4-26.P2.el7_9.3.x86_64</span><br><span class="line">bind-libs-9.11.4-26.P2.el7_9.3.x86_64</span><br><span class="line">bind-license-9.11.4-26.P2.el7_9.3.noarch</span><br><span class="line">bind-9.11.4-26.P2.el7_9.3.x86_64</span><br><span class="line">[root@463b50876ff4 &#x2F;]# printenv</span><br><span class="line">PATH&#x3D;&#x2F;usr&#x2F;local&#x2F;sbin:&#x2F;usr&#x2F;local&#x2F;bin:&#x2F;usr&#x2F;sbin:&#x2F;usr&#x2F;bin:&#x2F;sbin:&#x2F;bin</span><br><span class="line">PWD&#x3D;&#x2F;</span><br><span class="line">SHLVL&#x3D;1</span><br><span class="line">HOME&#x3D;&#x2F;root</span><br><span class="line">VER&#x3D;9.11.4-26.P2.el7_9.3</span><br></pre></td></tr></table></figure></li>
+<li><p>CMD/ENTRYPOINT 指令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">FROM centos:7</span><br><span class="line">RUN yum install httpd -y</span><br><span class="line">CMD [&quot;httpd&quot;, &quot;-D&quot;, &quot;FOREGROUND&quot;]</span><br><span class="line"></span><br><span class="line">docker build . -t jianghub&#x2F;centos:with_httpd</span><br><span class="line">docker run --rm -d --name myhttpd -p83:80 jianghub&#x2F;centos:with_httpd</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">FROM centos:7</span><br><span class="line">ADD entrypoint.sh &#x2F;entrypoint.sh</span><br><span class="line">RUN yum install epel-release -q -y &amp;&amp; yum install nginx -y</span><br><span class="line">ENTRYPOINT  &#x2F;entrypoint.sh</span><br><span class="line"></span><br><span class="line">docker run --rm -d --name mynginx -p 84:80 jianghub&#x2F;nginx:with_entrypoint</span><br><span class="line">docker exec -it mynginx &#x2F;bin&#x2F;bash</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="Docker-网络模型"><a href="#Docker-网络模型" class="headerlink" title="Docker 网络模型"></a>Docker 网络模型</h2><p>–net 指定</p>
+<p>NAT（默认）</p>
+<p>None</p>
+<p>Host</p>
+<p>联合网络     –net=container:<em>ID</em></p>
+<p>意义：</p>
+<p>内核3.8以上</p>
+<p>统一了基础设施环境 硬件，操作系统版本</p>
+<p>统一了程序打包方式</p>
+<p>统一了程序部署方式</p>
+<ul>
+<li>java -jar –&gt; docker run</li>
+<li>python manage.py runserver –&gt; docker run</li>
+<li>npm run dev –&gt; docker run</li>
+</ul>
+<p>k8s 1.15版本</p>
+<p>四组基本概念</p>
+<ul>
+<li>Pod/Pod控制器</li>
+<li>Name/Namespace</li>
+<li>Label/Label选择器</li>
+<li>Service/Ingress</li>
+</ul>
+<p>Pod控制器</p>
+<p>保证pod按照预期运行（副本数，生命周期，健康状态检查）</p>
+<ul>
+<li>Deployment</li>
+<li>DaemonSet</li>
+<li>ReplicaSet</li>
+<li>StatefulSet</li>
+<li>Job</li>
+<li>Cronjob</li>
+</ul>
+<h3 id="核心组件"><a href="#核心组件" class="headerlink" title="核心组件"></a>核心组件</h3><p>配置存储中心 etc服务</p>
+<p>主控（master）节点</p>
+<ul>
+<li>kube-apiserver服务</li>
+<li>kube-controller-manager服务</li>
+<li>kube-scheduler服务</li>
+</ul>
+<p>运算（node）节点</p>
+<ul>
+<li><p>kube-kubelet服务</p>
+</li>
+<li><p>kube-proxy服务</p>
+<p>三种流量转发方式</p>
+<ul>
+<li>USerspace 废弃</li>
+<li>Iptables 濒临废弃 net_filter</li>
+<li>Ipvs 推荐 lvs性能比iptables要高效得多</li>
+</ul>
+</li>
+</ul>
+<p>CLI客户端</p>
+<ul>
+<li>kubectl</li>
+</ul>
+<p>核心附件 9</p>
+<ul>
+<li>CNI网络插件 –&gt;flannel/calico</li>
+<li>服务发现用插件 –&gt;coredns</li>
+<li>服务暴露用插件 –&gt;traefik</li>
+<li>GUI管理插件 –&gt;Dashboard</li>
+</ul>
+<p>网络 Pod网络 Service网络 Node网络</p>
 ]]></content>
   </entry>
   <entry>
@@ -56,6 +467,249 @@
 <p>sudo pacman -S pycharm-community-edition</p>
 </li>
 </ol>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/enjoytech/2021/03/12/refind/</url>
+    <content><![CDATA[<h2 id="Swap分区异常"><a href="#Swap分区异常" class="headerlink" title="Swap分区异常"></a>Swap分区异常</h2><p>笔记本更换硬盘了，用ghost做了一下disk-to-disk拷贝，swap分区的uuid信息丢失，但是在系统的grub里面还有这个记录，启动和关闭系统时，有如下报错:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ERROR: resume: hibernation device <span class="string">&#x27;UUID=566cabc8-dd95-4290-9f8e-9eeewe76042e&#x27;</span> not found</span><br></pre></td></tr></table></figure>
+
+<p>解决：</p>
+<ul>
+<li><p>sudo pacman -S gparted</p>
+</li>
+<li><p>sudo gparted</p>
+</li>
+<li><p>图形化界面找到swap分区，右键-格式化成linux_swap分区，右键-新UUID</p>
+</li>
+<li><p>查看新uuid</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># blkid</span><br><span class="line">&#x2F;dev&#x2F;sda1: UUID&#x3D;&quot;9F05-D9BC&quot; BLOCK_SIZE&#x3D;&quot;512&quot; TYPE&#x3D;&quot;vfat&quot; PARTUUID&#x3D;&quot;241c1510-9b70-4ebf-a3ee-c0e6438ca409&quot;</span><br><span class="line">&#x2F;dev&#x2F;sda2: UUID&#x3D;&quot;969e7821-5adb-48bf-af1a-2f83e9306070&quot; BLOCK_SIZE&#x3D;&quot;4096&quot; TYPE&#x3D;&quot;ext4&quot; PARTUUID&#x3D;&quot;d170aa85-daaa-460e-a0af-ab806e8b581a&quot;</span><br><span class="line">&#x2F;dev&#x2F;sda3: UUID&#x3D;&quot;5417bf88-3d1f-4784-80f6-5b9bfd44ec52&quot; TYPE&#x3D;&quot;swap&quot; PARTUUID&#x3D;&quot;6422b4e6-31b5-4173-915d-2fbd90deca6e&quot;</span><br><span class="line">&#x2F;dev&#x2F;sdb1: LABEL&#x3D;&quot;H&quot; UUID&#x3D;&quot;DA18-EBFA&quot; BLOCK_SIZE&#x3D;&quot;512&quot; TYPE&#x3D;&quot;vfat&quot; PARTLABEL&#x3D;&quot;EFI system partition&quot; PARTUUID&#x3D;&quot;a80e041a-9ce9-4295-a5dc-e7113de615e4&quot;</span><br><span class="line">&#x2F;dev&#x2F;sdb2: LABEL&#x3D;&quot;M-gM-3M-;M-gM-;M-^_&quot; BLOCK_SIZE&#x3D;&quot;512&quot; UUID&#x3D;&quot;BCEA8B54EA8B0A3A&quot; TYPE&#x3D;&quot;ntfs&quot; PARTLABEL&#x3D;&quot;Basic data partition&quot; PARTUUID&#x3D;&quot;ed334da0-59ae-425f-9bc4-4b7bb4705974&quot;</span><br><span class="line">&#x2F;dev&#x2F;sdb3: LABEL&#x3D;&quot;M-fM-^UM-0M-fM-^MM-.&quot; BLOCK_SIZE&#x3D;&quot;512&quot; UUID&#x3D;&quot;2D97AD940A9AD661&quot; TYPE&#x3D;&quot;ntfs&quot; PARTLABEL&#x3D;&quot;Basic data partition&quot; PARTUUID&#x3D;&quot;5b6e051b-9acd-4305-883a-5587a9f335bf&quot;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>/dev/sda3: UUID=5417bf88-3d1f-4784-80f6-5b9bfd44ec52 就是我们要查的新的UUID</p>
+</li>
+<li><p>vi /etc/default/grub 修改 GRUB_CMDLINE_LINUX_DEFAULT行resume=UUID=<em>新UUID</em></p>
+</li>
+<li><p>sudo update-grub</p>
+<p>注意:不推荐直接修改/boot/grub/grub.cfg文件中的内容，而是通过上面的命令重新生成grub信息</p>
+</li>
+</ul>
+<h2 id="rEFInd引导"><a href="#rEFInd引导" class="headerlink" title="rEFInd引导"></a>rEFInd引导</h2><p>笔记本有两个硬盘位，分别安装了Win10和Manjaro系统，每次都要按F12来选择引导，比较麻烦。采用rEFInd来引导两个系统。</p>
+<ul>
+<li>查看磁盘第一个分区的相关信息</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># sgdisk -i 1 /dev/sda</span></span><br><span class="line">Partition GUID code: C12A7328-F81F-11D2-BA4B-00A0C93EC93B (EFI system partition)</span><br><span class="line">Partition unique GUID: 241C1510-9B70-4EBF-A3EE-C0E6438CA409</span><br><span class="line">First sector: 2048 (at 1024.0 KiB)</span><br><span class="line">Last sector: 4268031 (at 2.0 GiB)</span><br><span class="line">Partition size: 4265984 sectors (2.0 GiB)</span><br><span class="line">Attribute flags: 0000000000000000</span><br><span class="line">Partition name: <span class="string">&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># sgdisk -i 1 /dev/sdb</span></span><br><span class="line">Partition GUID code: C12A7328-F81F-11D2-BA4B-00A0C93EC93B (EFI system partition)</span><br><span class="line">Partition unique GUID: A80E041A-9CE9-4295-A5DC-E7113DE615E4</span><br><span class="line">First sector: 2048 (at 1024.0 KiB)</span><br><span class="line">Last sector: 616447 (at 301.0 MiB)</span><br><span class="line">Partition size: 614400 sectors (300.0 MiB)</span><br><span class="line">Attribute flags: 8000000000000000</span><br><span class="line">Partition name: <span class="string">&#x27;EFI system partition&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># sgdisk -i 2 /dev/sdb</span></span><br><span class="line">Partition GUID code: EBD0A0A2-B9E5-4433-87C0-68B6B72699C7 (Microsoft basic data)</span><br><span class="line">Partition unique GUID: ED334DA0-59AE-425F-9BC4-4B7BB4705974</span><br><span class="line">First sector: 616448 (at 301.0 MiB)</span><br><span class="line">Last sector: 190207999 (at 90.7 GiB)</span><br><span class="line">Partition size: 189591552 sectors (90.4 GiB)</span><br><span class="line">Attribute flags: 0000000000000000</span><br><span class="line">Partition name: <span class="string">&#x27;Basic data partition&#x27;</span></span><br><span class="line"><span class="comment"># 这是查看第二磁盘的第二分区的GUID，因为操作系统安装在这个分区</span></span><br></pre></td></tr></table></figure>
+
+<p>记录下/dev/sda1:<code>Partition unique GUID: 241C1510-9B70-4EBF-A3EE-C0E6438CA409</code></p>
+<p>/dev/sdb1:<code>Partition unique GUID: A80E041A-9CE9-4295-A5DC-E7113DE615E4</code></p>
+<p>这两个是两块磁盘的第一个EFI分区的GUID。</p>
+<p>/dev/sdb2:<code>Partition unique GUID: ED334DA0-59AE-425F-9BC4-4B7BB4705974</code></p>
+<p>这是第二块磁盘的第二个分区的GUID</p>
+<ul>
+<li><p>将第二块磁盘的EFI分区挂载，拷贝EFI/Microsoft至第一块磁盘/boot/efi/EFI/目录，之所以拷贝至第一块磁盘，是因为refind将安装在第一块磁盘。</p>
+</li>
+<li><p>安装rEFInd</p>
+</li>
+<li><p>配置rEFInd，vi /boot/efi/EFI/refind/refind.conf，文件末尾添加以下配置</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">dont_scan_volumes 241C1510-9B70-4EBF-A3EE-C0E6438CA409,A80E041A-9CE9-4295-A5DC-E7113DE615E4</span><br><span class="line"><span class="comment"># 这里就是上面我们查到的两块盘的第一个EFI分区，因为rEFInd会默认扫描所有的分区，所以会出现很多重复的启动项，这里先禁掉扫描的卷，要启动哪些项我们自己来定义</span></span><br><span class="line">scan_all_linux_kernels <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">include themes/rEFInd-minimal/theme.conf</span><br><span class="line"><span class="comment"># 下载了一个rEFInd-minimal的主题，这个是为了美化，可以不做</span></span><br><span class="line"></span><br><span class="line">menuentry <span class="string">&quot;Arch Linux&quot;</span> &#123;     </span><br><span class="line">    icon \EFI\refind\themes/rEFInd-minimal/icons/os_arch.png	<span class="comment"># 启动项的图标，这里用的是主题里面的图标</span></span><br><span class="line">    loader \EFI\Manjaro\grubx64.efi</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">menuentry <span class="string">&quot;Windows 10&quot;</span> &#123;     </span><br><span class="line">    icon \EFI\refind\themes/rEFInd-minimal/icons/os_win8.png</span><br><span class="line">    volume ED334DA0-59AE-425F-9BC4-4B7BB4705974	<span class="comment"># 引导的卷在/dev/sdb2</span></span><br><span class="line">    loader \EFI\Microsoft\Boot\bootmgfw.efi</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/enjoytech/2021/03/12/%E4%BD%BF%E7%94%A8kubeadm%E6%90%AD%E5%BB%BA%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84K8s%E9%9B%86%E7%BE%A4/</url>
+    <content><![CDATA[<p>kubeadm是官方社区推出的一个用于快速部署kubernetes集群的工具。</p>
+<p>这个工具能通过两条指令完成一个kubernetes集群的部署：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 创建一个 Master 节点</span><br><span class="line">$ kubeadm init</span><br><span class="line"></span><br><span class="line"># 将一个 Node 节点加入到当前集群中</span><br><span class="line">$ kubeadm join &lt;Master节点的IP和端口 &gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-安装要求"><a href="#1-安装要求" class="headerlink" title="1. 安装要求"></a>1. 安装要求</h2><p>在开始之前，部署Kubernetes集群机器需要满足以下几个条件：</p>
+<ul>
+<li>一台或多台机器，操作系统 CentOS7.x-86_x64</li>
+<li>硬件配置：2GB或更多RAM，2个CPU或更多CPU，硬盘30GB或更多</li>
+<li>可以访问外网，需要拉取镜像，如果服务器不能上网，需要提前下载镜像并导入节点</li>
+<li>禁止swap分区</li>
+</ul>
+<h2 id="2-准备环境"><a href="#2-准备环境" class="headerlink" title="2. 准备环境"></a>2. 准备环境</h2><table>
+<thead>
+<tr>
+<th>角色</th>
+<th>IP</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>master1</td>
+<td>192.168.44.155</td>
+</tr>
+<tr>
+<td>master2</td>
+<td>192.168.44.156</td>
+</tr>
+<tr>
+<td>node1</td>
+<td>192.168.44.157</td>
+</tr>
+<tr>
+<td>VIP（虚拟ip）</td>
+<td>192.168.44.158</td>
+</tr>
+</tbody></table>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 关闭防火墙</span><br><span class="line">systemctl stop firewalld</span><br><span class="line">systemctl disable firewalld</span><br><span class="line"></span><br><span class="line"># 关闭selinux</span><br><span class="line">sed -i &#39;s&#x2F;enforcing&#x2F;disabled&#x2F;&#39; &#x2F;etc&#x2F;selinux&#x2F;config  # 永久</span><br><span class="line">setenforce 0  # 临时</span><br><span class="line"></span><br><span class="line"># 关闭swap</span><br><span class="line">swapoff -a  # 临时</span><br><span class="line">sed -ri &#39;s&#x2F;.*swap.*&#x2F;#&amp;&#x2F;&#39; &#x2F;etc&#x2F;fstab    # 永久</span><br><span class="line"></span><br><span class="line"># 根据规划设置主机名</span><br><span class="line">hostnamectl set-hostname &lt;hostname&gt;</span><br><span class="line"></span><br><span class="line"># 在master添加hosts</span><br><span class="line">cat &gt;&gt; &#x2F;etc&#x2F;hosts &lt;&lt; EOF</span><br><span class="line">192.168.44.158    master.k8s.io   k8s-vip</span><br><span class="line">192.168.44.155    master01.k8s.io master1</span><br><span class="line">192.168.44.156    master02.k8s.io master2</span><br><span class="line">192.168.44.157    node01.k8s.io   node1</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"># 将桥接的IPv4流量传递到iptables的链</span><br><span class="line">cat &gt; &#x2F;etc&#x2F;sysctl.d&#x2F;k8s.conf &lt;&lt; EOF</span><br><span class="line">net.bridge.bridge-nf-call-ip6tables &#x3D; 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables &#x3D; 1</span><br><span class="line">EOF</span><br><span class="line">sysctl --system  # 生效</span><br><span class="line"></span><br><span class="line"># 时间同步</span><br><span class="line">yum install ntpdate -y</span><br><span class="line">ntpdate time.windows.com</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="3-所有master节点部署keepalived"><a href="#3-所有master节点部署keepalived" class="headerlink" title="3. 所有master节点部署keepalived"></a>3. 所有master节点部署keepalived</h2><h3 id="3-1-安装相关包和keepalived"><a href="#3-1-安装相关包和keepalived" class="headerlink" title="3.1 安装相关包和keepalived"></a>3.1 安装相关包和keepalived</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install -y conntrack-tools libseccomp libtool-ltdl</span><br><span class="line"></span><br><span class="line">yum install -y keepalived</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2配置master节点"><a href="#3-2配置master节点" class="headerlink" title="3.2配置master节点"></a>3.2配置master节点</h3><p>master1节点配置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat &gt; &#x2F;etc&#x2F;keepalived&#x2F;keepalived.conf &lt;&lt;EOF </span><br><span class="line">! Configuration File for keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   router_id k8s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_script check_haproxy &#123;</span><br><span class="line">    script &quot;killall -0 haproxy&quot;</span><br><span class="line">    interval 3</span><br><span class="line">    weight -2</span><br><span class="line">    fall 10</span><br><span class="line">    rise 2</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state MASTER </span><br><span class="line">    interface ens33 </span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    priority 250</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass ceb1b3ec013d66163d6ab</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.44.158</span><br><span class="line">    &#125;</span><br><span class="line">    track_script &#123;</span><br><span class="line">        check_haproxy</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<p>master2节点配置</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat &gt; &#x2F;etc&#x2F;keepalived&#x2F;keepalived.conf &lt;&lt;EOF </span><br><span class="line">! Configuration File for keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   router_id k8s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_script check_haproxy &#123;</span><br><span class="line">    script &quot;killall -0 haproxy&quot;</span><br><span class="line">    interval 3</span><br><span class="line">    weight -2</span><br><span class="line">    fall 10</span><br><span class="line">    rise 2</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state BACKUP </span><br><span class="line">    interface ens33 </span><br><span class="line">    virtual_router_id 51</span><br><span class="line">    priority 200</span><br><span class="line">    advert_int 1</span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass ceb1b3ec013d66163d6ab</span><br><span class="line">    &#125;</span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        192.168.44.158</span><br><span class="line">    &#125;</span><br><span class="line">    track_script &#123;</span><br><span class="line">        check_haproxy</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-启动和检查"><a href="#3-3-启动和检查" class="headerlink" title="3.3 启动和检查"></a>3.3 启动和检查</h3><p>在两台master节点都执行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 启动keepalived</span><br><span class="line">$ systemctl start keepalived.service</span><br><span class="line">设置开机启动</span><br><span class="line">$ systemctl enable keepalived.service</span><br><span class="line"># 查看启动状态</span><br><span class="line">$ systemctl status keepalived.service</span><br></pre></td></tr></table></figure>
+
+<p>启动后查看master1的网卡信息</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ip a s ens33</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="4-部署haproxy"><a href="#4-部署haproxy" class="headerlink" title="4. 部署haproxy"></a>4. 部署haproxy</h2><h3 id="4-1-安装"><a href="#4-1-安装" class="headerlink" title="4.1 安装"></a>4.1 安装</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install -y haproxy</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-配置"><a href="#4-2-配置" class="headerlink" title="4.2 配置"></a>4.2 配置</h3><p>两台master节点的配置均相同，配置中声明了后端代理的两个master节点服务器，指定了haproxy运行的端口为16443等，因此16443端口为集群的入口</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cat &gt; &#x2F;etc&#x2F;haproxy&#x2F;haproxy.cfg &lt;&lt; EOF</span><br><span class="line">#---------------------------------------------------------------------</span><br><span class="line"># Global settings</span><br><span class="line">#---------------------------------------------------------------------</span><br><span class="line">global</span><br><span class="line">    # to have these messages end up in &#x2F;var&#x2F;log&#x2F;haproxy.log you will</span><br><span class="line">    # need to:</span><br><span class="line">    # 1) configure syslog to accept network log events.  This is done</span><br><span class="line">    #    by adding the &#39;-r&#39; option to the SYSLOGD_OPTIONS in</span><br><span class="line">    #    &#x2F;etc&#x2F;sysconfig&#x2F;syslog</span><br><span class="line">    # 2) configure local2 events to go to the &#x2F;var&#x2F;log&#x2F;haproxy.log</span><br><span class="line">    #   file. A line like the following can be added to</span><br><span class="line">    #   &#x2F;etc&#x2F;sysconfig&#x2F;syslog</span><br><span class="line">    #</span><br><span class="line">    #    local2.*                       &#x2F;var&#x2F;log&#x2F;haproxy.log</span><br><span class="line">    #</span><br><span class="line">    log         127.0.0.1 local2</span><br><span class="line">    </span><br><span class="line">    chroot      &#x2F;var&#x2F;lib&#x2F;haproxy</span><br><span class="line">    pidfile     &#x2F;var&#x2F;run&#x2F;haproxy.pid</span><br><span class="line">    maxconn     4000</span><br><span class="line">    user        haproxy</span><br><span class="line">    group       haproxy</span><br><span class="line">    daemon </span><br><span class="line">       </span><br><span class="line">    # turn on stats unix socket</span><br><span class="line">    stats socket &#x2F;var&#x2F;lib&#x2F;haproxy&#x2F;stats</span><br><span class="line">#---------------------------------------------------------------------</span><br><span class="line"># common defaults that all the &#39;listen&#39; and &#39;backend&#39; sections will</span><br><span class="line"># use if not designated in their block</span><br><span class="line">#---------------------------------------------------------------------  </span><br><span class="line">defaults</span><br><span class="line">    mode                    http</span><br><span class="line">    log                     global</span><br><span class="line">    option                  httplog</span><br><span class="line">    option                  dontlognull</span><br><span class="line">    option http-server-close</span><br><span class="line">    option forwardfor       except 127.0.0.0&#x2F;8</span><br><span class="line">    option                  redispatch</span><br><span class="line">    retries                 3</span><br><span class="line">    timeout http-request    10s</span><br><span class="line">    timeout queue           1m</span><br><span class="line">    timeout connect         10s</span><br><span class="line">    timeout client          1m</span><br><span class="line">    timeout server          1m</span><br><span class="line">    timeout http-keep-alive 10s</span><br><span class="line">    timeout check           10s</span><br><span class="line">    maxconn                 3000</span><br><span class="line">#---------------------------------------------------------------------</span><br><span class="line"># kubernetes apiserver frontend which proxys to the backends</span><br><span class="line">#--------------------------------------------------------------------- </span><br><span class="line">frontend kubernetes-apiserver</span><br><span class="line">    mode                 tcp</span><br><span class="line">    bind                 *:16443</span><br><span class="line">    option               tcplog</span><br><span class="line">    default_backend      kubernetes-apiserver    </span><br><span class="line">#---------------------------------------------------------------------</span><br><span class="line"># round robin balancing between the various backends</span><br><span class="line">#---------------------------------------------------------------------</span><br><span class="line">backend kubernetes-apiserver</span><br><span class="line">    mode        tcp</span><br><span class="line">    balance     roundrobin</span><br><span class="line">    server      master01.k8s.io   192.168.44.155:6443 check</span><br><span class="line">    server      master02.k8s.io   192.168.44.156:6443 check</span><br><span class="line">#---------------------------------------------------------------------</span><br><span class="line"># collection haproxy statistics message</span><br><span class="line">#---------------------------------------------------------------------</span><br><span class="line">listen stats</span><br><span class="line">    bind                 *:1080</span><br><span class="line">    stats auth           admin:awesomePassword</span><br><span class="line">    stats refresh        5s</span><br><span class="line">    stats realm          HAProxy\ Statistics</span><br><span class="line">    stats uri            &#x2F;admin?stats</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-启动和检查"><a href="#4-3-启动和检查" class="headerlink" title="4.3 启动和检查"></a>4.3 启动和检查</h3><p>两台master都启动</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 设置开机启动</span><br><span class="line">$ systemctl enable haproxy</span><br><span class="line"># 开启haproxy</span><br><span class="line">$ systemctl start haproxy</span><br><span class="line"># 查看启动状态</span><br><span class="line">$ systemctl status haproxy</span><br></pre></td></tr></table></figure>
+
+<p>检查端口</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">netstat -lntup|grep haproxy</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="5-所有节点安装Docker-kubeadm-kubelet"><a href="#5-所有节点安装Docker-kubeadm-kubelet" class="headerlink" title="5. 所有节点安装Docker/kubeadm/kubelet"></a>5. 所有节点安装Docker/kubeadm/kubelet</h2><p>Kubernetes默认CRI（容器运行时）为Docker，因此先安装Docker。</p>
+<h3 id="5-1-安装Docker"><a href="#5-1-安装Docker" class="headerlink" title="5.1 安装Docker"></a>5.1 安装Docker</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ wget https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;docker-ce&#x2F;linux&#x2F;centos&#x2F;docker-ce.repo -O &#x2F;etc&#x2F;yum.repos.d&#x2F;docker-ce.repo</span><br><span class="line">$ yum -y install docker-ce-18.06.1.ce-3.el7</span><br><span class="line">$ systemctl enable docker &amp;&amp; systemctl start docker</span><br><span class="line">$ docker --version</span><br><span class="line">Docker version 18.06.1-ce, build e68fc7a</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cat &gt; &#x2F;etc&#x2F;docker&#x2F;daemon.json &lt;&lt; EOF</span><br><span class="line">&#123;</span><br><span class="line">  &quot;registry-mirrors&quot;: [&quot;https:&#x2F;&#x2F;b9pmyelo.mirror.aliyuncs.com&quot;]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-添加阿里云YUM软件源"><a href="#5-2-添加阿里云YUM软件源" class="headerlink" title="5.2 添加阿里云YUM软件源"></a>5.2 添加阿里云YUM软件源</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ cat &gt; &#x2F;etc&#x2F;yum.repos.d&#x2F;kubernetes.repo &lt;&lt; EOF</span><br><span class="line">[kubernetes]</span><br><span class="line">name&#x3D;Kubernetes</span><br><span class="line">baseurl&#x3D;https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;yum&#x2F;repos&#x2F;kubernetes-el7-x86_64</span><br><span class="line">enabled&#x3D;1</span><br><span class="line">gpgcheck&#x3D;0</span><br><span class="line">repo_gpgcheck&#x3D;0</span><br><span class="line">gpgkey&#x3D;https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;yum&#x2F;doc&#x2F;yum-key.gpg https:&#x2F;&#x2F;mirrors.aliyun.com&#x2F;kubernetes&#x2F;yum&#x2F;doc&#x2F;rpm-package-key.gpg</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-3-安装kubeadm，kubelet和kubectl"><a href="#5-3-安装kubeadm，kubelet和kubectl" class="headerlink" title="5.3 安装kubeadm，kubelet和kubectl"></a>5.3 安装kubeadm，kubelet和kubectl</h3><p>由于版本更新频繁，这里指定版本号部署：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ yum install -y kubelet-1.16.3 kubeadm-1.16.3 kubectl-1.16.3</span><br><span class="line">$ systemctl enable kubelet</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="6-部署Kubernetes-Master"><a href="#6-部署Kubernetes-Master" class="headerlink" title="6. 部署Kubernetes Master"></a>6. 部署Kubernetes Master</h2><h3 id="6-1-创建kubeadm配置文件"><a href="#6-1-创建kubeadm配置文件" class="headerlink" title="6.1 创建kubeadm配置文件"></a>6.1 创建kubeadm配置文件</h3><p>在具有vip的master上操作，这里为master1</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ mkdir &#x2F;usr&#x2F;local&#x2F;kubernetes&#x2F;manifests -p</span><br><span class="line"></span><br><span class="line">$ cd &#x2F;usr&#x2F;local&#x2F;kubernetes&#x2F;manifests&#x2F;</span><br><span class="line"></span><br><span class="line">$ vi kubeadm-config.yaml</span><br><span class="line"></span><br><span class="line">apiServer:</span><br><span class="line">  certSANs:</span><br><span class="line">    - master1</span><br><span class="line">    - master2</span><br><span class="line">    - master.k8s.io</span><br><span class="line">    - 192.168.44.158</span><br><span class="line">    - 192.168.44.155</span><br><span class="line">    - 192.168.44.156</span><br><span class="line">    - 127.0.0.1</span><br><span class="line">  extraArgs:</span><br><span class="line">    authorization-mode: Node,RBAC</span><br><span class="line">  timeoutForControlPlane: 4m0s</span><br><span class="line">apiVersion: kubeadm.k8s.io&#x2F;v1beta1</span><br><span class="line">certificatesDir: &#x2F;etc&#x2F;kubernetes&#x2F;pki</span><br><span class="line">clusterName: kubernetes</span><br><span class="line">controlPlaneEndpoint: &quot;master.k8s.io:16443&quot;</span><br><span class="line">controllerManager: &#123;&#125;</span><br><span class="line">dns: </span><br><span class="line">  type: CoreDNS</span><br><span class="line">etcd:</span><br><span class="line">  local:    </span><br><span class="line">    dataDir: &#x2F;var&#x2F;lib&#x2F;etcd</span><br><span class="line">imageRepository: registry.aliyuncs.com&#x2F;google_containers</span><br><span class="line">kind: ClusterConfiguration</span><br><span class="line">kubernetesVersion: v1.16.3</span><br><span class="line">networking: </span><br><span class="line">  dnsDomain: cluster.local  </span><br><span class="line">  podSubnet: 10.244.0.0&#x2F;16</span><br><span class="line">  serviceSubnet: 10.1.0.0&#x2F;16</span><br><span class="line">scheduler: &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="6-2-在master1节点执行"><a href="#6-2-在master1节点执行" class="headerlink" title="6.2 在master1节点执行"></a>6.2 在master1节点执行</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ kubeadm init --config kubeadm-config.yaml</span><br></pre></td></tr></table></figure>
+
+
+
+<p>按照提示配置环境变量，使用kubectl工具：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir -p <span class="variable">$HOME</span>/.kube</span><br><span class="line">sudo cp -i /etc/kubernetes/admin.conf <span class="variable">$HOME</span>/.kube/config</span><br><span class="line">sudo chown $(id -u):$(id -g) <span class="variable">$HOME</span>/.kube/config</span><br><span class="line">$ kubectl get nodes</span><br><span class="line">$ kubectl get pods -n kube-system</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>按照提示保存以下内容，一会要使用：</strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">kubeadm join master.k8s.io:16443 --token jv5z7n.3y1zi95p952y9p65 \</span><br><span class="line">    --discovery-token-ca-cert-hash sha256:403bca185c2f3a4791685013499e7ce58f9848e2213e27194b75a2e3293d8812 \</span><br><span class="line">    --control-plane </span><br></pre></td></tr></table></figure>
+
+<p>查看集群状态</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">kubectl get cs</span><br><span class="line"></span><br><span class="line">kubectl get pods -n kube-system</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="7-安装集群网络"><a href="#7-安装集群网络" class="headerlink" title="7.安装集群网络"></a>7.安装集群网络</h2><p>从官方地址获取到flannel的yaml，在master1上执行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir flannel</span><br><span class="line"><span class="built_in">cd</span> flannel</span><br><span class="line">wget -c https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml</span><br></pre></td></tr></table></figure>
+
+
+
+<p>安装flannel网络</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">kubectl apply -f kube-flannel.yml </span><br></pre></td></tr></table></figure>
+
+<p>检查</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">kubectl get pods -n kube-system</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="8、master2节点加入集群"><a href="#8、master2节点加入集群" class="headerlink" title="8、master2节点加入集群"></a>8、master2节点加入集群</h2><h3 id="8-1-复制密钥及相关文件"><a href="#8-1-复制密钥及相关文件" class="headerlink" title="8.1 复制密钥及相关文件"></a>8.1 复制密钥及相关文件</h3><p>从master1复制密钥及相关文件到master2</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ssh root@192.168.44.156 mkdir -p /etc/kubernetes/pki/etcd</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># scp /etc/kubernetes/admin.conf root@192.168.44.156:/etc/kubernetes</span></span><br><span class="line">   </span><br><span class="line"><span class="comment"># scp /etc/kubernetes/pki/&#123;ca.*,sa.*,front-proxy-ca.*&#125; root@192.168.44.156:/etc/kubernetes/pki</span></span><br><span class="line">   </span><br><span class="line"><span class="comment"># scp /etc/kubernetes/pki/etcd/ca.* root@192.168.44.156:/etc/kubernetes/pki/etcd</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="8-2-master2加入集群"><a href="#8-2-master2加入集群" class="headerlink" title="8.2 master2加入集群"></a>8.2 master2加入集群</h3><p>执行在master1上init后输出的join命令,需要带上参数<code>--control-plane</code>表示把master控制节点加入集群</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubeadm join master.k8s.io:16443 --token ckf7bs.30576l0okocepg8b     --discovery-token-ca-cert-hash sha256:19afac8b11182f61073e254fb57b9f19ab4d798b70501036fc69ebef46094aba --control-plane</span><br></pre></td></tr></table></figure>
+
+<p>检查状态</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get node</span><br><span class="line"></span><br><span class="line">kubectl get pods --all-namespaces</span><br></pre></td></tr></table></figure>
+
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2><h2 id="5-加入Kubernetes-Node"><a href="#5-加入Kubernetes-Node" class="headerlink" title="5. 加入Kubernetes Node"></a>5. 加入Kubernetes Node</h2><p>在node1上执行</p>
+<p>向集群添加新节点，执行在kubeadm init输出的kubeadm join命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubeadm join master.k8s.io:16443 --token ckf7bs.30576l0okocepg8b     --discovery-token-ca-cert-hash sha256:19afac8b11182f61073e254fb57b9f19ab4d798b70501036fc69ebef46094aba</span><br></pre></td></tr></table></figure>
+
+<p><strong>集群网络重新安装，因为添加了新的node节点</strong></p>
+<p>检查状态</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">kubectl get node</span><br><span class="line"></span><br><span class="line">kubectl get pods --all-namespaces</span><br></pre></td></tr></table></figure>
+
+<h2 id="-1"><a href="#-1" class="headerlink" title=""></a></h2><h2 id="7-测试kubernetes集群"><a href="#7-测试kubernetes集群" class="headerlink" title="7. 测试kubernetes集群"></a>7. 测试kubernetes集群</h2><p>在Kubernetes集群中创建一个pod，验证是否正常运行：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ kubectl create deployment nginx --image&#x3D;nginx</span><br><span class="line">$ kubectl expose deployment nginx --port&#x3D;80 --type&#x3D;NodePort</span><br><span class="line">$ kubectl get pod,svc</span><br></pre></td></tr></table></figure>
+
+<p>访问地址：<a href="http://NodeIP:Port">http://NodeIP:Port</a>  </p>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/enjoytech/2021/03/12/%E5%AE%89%E8%A3%85Bind%E6%9C%8D%E5%8A%A1/</url>
+    <content><![CDATA[<p>K8S环境部署</p>
+<p>五台虚拟机</p>
+<p>10.4.7.11    hostname:hdss7-11.host.com</p>
+<p>10.4.7.12    hostname:hdss7-12.host.com</p>
+<p>10.4.7.21    hostname:hdss7-21.host.com</p>
+<p>10.4.7.22    hostname:hdss7-22.host.com</p>
+<p>10.4.7.200    hostname:hdss7-200.host.com</p>
+<h3 id="安装Bind服务"><a href="#安装Bind服务" class="headerlink" title="安装Bind服务"></a>安装Bind服务</h3><p>10.4.7.11 yum install -y bind9</p>
+<p>bind服务配置：</p>
+<p>vi /etc/named.conf，以下是修改配置文件内容修改：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">listen-on port 53 &#123; 10.4.7.11; &#125;;</span><br><span class="line">&#x2F;&#x2F;listen-on-v6 port 53 &#123; ::1; &#125;;</span><br><span class="line">&#x2F;&#x2F;allow-query     &#123; localhost; &#125;;</span><br><span class="line">allow-query     &#123; any; &#125;;</span><br><span class="line">forwarders      &#123; 10.4.7.1; &#125;;</span><br><span class="line"></span><br><span class="line">recursion yes;</span><br><span class="line">&#x2F;&#x2F;dnssec-enable yes;</span><br><span class="line">&#x2F;&#x2F;dnssec-validation yes;</span><br><span class="line">dnssec-enable no;</span><br><span class="line">dnssec-validation no;</span><br></pre></td></tr></table></figure>
+
+<p>vi /etc/named.rfc1912.zones</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">zone &quot;host.com&quot; IN &#123;</span><br><span class="line">        type master;</span><br><span class="line">        file &quot;host.com.zone&quot;;</span><br><span class="line">        allow-update &#123; 10.4.7.11; &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">zone &quot;od.com&quot; IN &#123;</span><br><span class="line">        type master;</span><br><span class="line">        file &quot;od.com.zone&quot;;</span><br><span class="line">        allow-update &#123; 10.4.7.11; &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>vi /var/named/host.com.zone</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ORIGIN host.com.</span><br><span class="line">$TTL 600        ; 10 minutes</span><br><span class="line">@       IN SOA  dns.host.com. dnsadmin.host.com. (</span><br><span class="line">                20210225        ; serial</span><br><span class="line">                10800           ; refresh (3 hours)</span><br><span class="line">                900             ; refresh (15 minutes)</span><br><span class="line">                604800          ; expire (1 week)</span><br><span class="line">                86400           ; minimum (1 day)</span><br><span class="line">                )</span><br><span class="line">           NS   dns.host.com.</span><br><span class="line">$TTL 60 ; 1 minute</span><br><span class="line">dns             A       10.4.7.11</span><br><span class="line">HDSS7-11        A       10.4.7.11</span><br><span class="line">HDSS7-12        A       10.4.7.12</span><br><span class="line">HDSS7-21        A       10.4.7.21</span><br><span class="line">HDSS7-22        A       10.4.7.22</span><br><span class="line">HDSS7-200       A       10.4.7.200</span><br></pre></td></tr></table></figure>
+
+<p>vi /var/named/od.com.zone</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ORIGIN od.com.</span><br><span class="line">$TTL 600        ; 10 minutes</span><br><span class="line">@       IN SOA  dns.od.com. dnsadmin.od.com. (</span><br><span class="line">                20210225        ; serial</span><br><span class="line">                10800           ; refresh (3 hours)</span><br><span class="line">                900             ; refresh (15 minutes)</span><br><span class="line">                604800          ; expire (1 week)</span><br><span class="line">                86400           ; minimum (1 day)</span><br><span class="line">                )</span><br><span class="line">           NS   dns.od.com.</span><br><span class="line">$TTL 60 ; 1 minute</span><br><span class="line">dns             A       10.4.7.11</span><br></pre></td></tr></table></figure>
+
+
+
+<p>systemctl start named</p>
+<p>修改五台主机的网卡配置文件，DNS1=10.4.7.11</p>
+<p>vi /etc/resolve.conf，添加</p>
+<p>search host.com    #表示短域名</p>
+<h3 id="证书签发"><a href="#证书签发" class="headerlink" title="证书签发"></a>证书签发</h3><p> 访问<a href="https://pkg.cfssl.org/">https://pkg.cfssl.org/</a></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">wget https:&#x2F;&#x2F;pkg.cfssl.org&#x2F;R1.2&#x2F;cfssl_linux-amd64 -O &#x2F;usr&#x2F;bin&#x2F;cfssl_linux-amd64</span><br><span class="line">wget https:&#x2F;&#x2F;pkg.cfssl.org&#x2F;R1.2&#x2F;cfssljson_linux-amd64 -O &#x2F;usr&#x2F;bin&#x2F;cfssljson_linux-amd64</span><br><span class="line">wget https:&#x2F;&#x2F;pkg.cfssl.org&#x2F;R1.2&#x2F;cfssl-certinfo_linux-amd64 -O &#x2F;usr&#x2F;bin&#x2F;cfssl-certinfo_linux-amd64</span><br><span class="line">chmod +x &#x2F;usr&#x2F;bin&#x2F;cfssl*</span><br></pre></td></tr></table></figure>
+
+<p>根证书签发：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim &#x2F;opt&#x2F;certs&#x2F;ca-csr.json</span><br><span class="line">&#123;</span><br><span class="line">    &quot;CN&quot;: &quot;OldboyEdu&quot;,</span><br><span class="line">    &quot;hosts&quot;: [</span><br><span class="line">    ],</span><br><span class="line">    &quot;key&quot;: &#123;</span><br><span class="line">        &quot;algo&quot;: &quot;rsa&quot;,</span><br><span class="line">        &quot;size&quot;: 2048</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;names&quot;: [</span><br><span class="line">        &#123;</span><br><span class="line">            &quot;C&quot;: &quot;CN&quot;,</span><br><span class="line">            &quot;ST&quot;: &quot;beijing&quot;,</span><br><span class="line">            &quot;L&quot;: &quot;beijing&quot;,</span><br><span class="line">            &quot;O&quot;: &quot;od&quot;,</span><br><span class="line">            &quot;OU&quot;: &quot;ops&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;ca&quot;: &#123;</span><br><span class="line">        &quot;expiry&quot;: &quot;175200h&quot;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>CN: Common Name ,浏览器使用该字段验证网站是否合法, 一般写的是域名。非常重要。浏览器使</p>
+<p>用该字段验证网站是否合法</p>
+<p>C: Country,国家</p>
+<p>ST:State,州，省</p>
+<p>L: Locality ,地区,城市</p>
+<p>O: Organization Name ,组织名称,公司名称</p>
+<p>OU: Organization Unit Name ,组织单位名称,公司部门</p>
+<p>“expiry”: “175200h”  # 过期时间（20年）</p>
+<p><code>cfssl gencert -initca ca-csr.json | cfssl-json -bare ca</code></p>
+]]></content>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/enjoytech/2021/03/12/%E8%AE%BF%E9%97%AEGithub%E6%85%A2/</url>
+    <content><![CDATA[<h2 id="访问Github慢"><a href="#访问Github慢" class="headerlink" title="访问Github慢"></a>访问Github慢</h2><ul>
+<li>打开 <a href="http://www.github.com.ipaddress.com/">http://www.github.com.ipaddress.com/</a>,  查看当前环境对应的 GitHub的ip地址</li>
+<li>在hosts文件中增加以下地址： [ipaddress] github.com</li>
+</ul>
 ]]></content>
   </entry>
 </search>
