@@ -271,28 +271,10 @@
       </categories>
   </entry>
   <entry>
-    <title>Hello World</title>
-    <url>/enjoytech/2021/03/12/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
-  </entry>
-  <entry>
     <title>Git学习</title>
     <url>/enjoytech/2021/03/12/git%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<h2 id="Git版本管理工具"><a href="#Git版本管理工具" class="headerlink" title="Git版本管理工具"></a>Git版本管理工具</h2><p>常用命令：</p>
-<p>  git config –global user.email “<a href="mailto:&#x79;&#111;&#x75;&#64;&#101;&#x78;&#x61;&#x6d;&#x70;&#x6c;&#101;&#46;&#x63;&#x6f;&#x6d;">&#x79;&#111;&#x75;&#64;&#101;&#x78;&#x61;&#x6d;&#x70;&#x6c;&#101;&#46;&#x63;&#x6f;&#x6d;</a>“<br>  git config –global user.name “Your Name”</p>
+<p>  git config –global user.email “<a href="mailto:&#x79;&#111;&#117;&#64;&#x65;&#x78;&#x61;&#109;&#112;&#108;&#101;&#46;&#x63;&#x6f;&#109;">&#x79;&#111;&#117;&#64;&#x65;&#x78;&#x61;&#109;&#112;&#108;&#101;&#46;&#x63;&#x6f;&#109;</a>“<br>  git config –global user.name “Your Name”</p>
 <ul>
 <li><p>git init    # 初始化，让git管理当前文件夹</p>
 </li>
@@ -361,49 +343,22 @@
       </categories>
   </entry>
   <entry>
-    <title>Manjaro初始化</title>
-    <url>/enjoytech/2021/03/12/manjaro/</url>
-    <content><![CDATA[<ol>
-<li><p>安装VirtualBox</p>
-<p>查看内核版本，下载对应版本包：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[jiang@e450 ~]$ uname -a</span><br><span class="line">Linux e450 5.9.16-1-MANJARO #1 SMP PREEMPT Mon Dec 21 22:00:46 UTC 2020 x86_64 GNU&#x2F;Linux</span><br></pre></td></tr></table></figure>
+    <title>Hello World</title>
+    <url>/enjoytech/2021/03/12/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
 
-<p>sudo pacman -S linux59-headers linux59-virtualbox-host-modules virtualbox-host-dkms virtualbox</p>
-</li>
-<li><p>安装Vmware workstation</p>
-<p>安装VirtualBox时已经安装了linux59-headers模块</p>
-<p>sudo pacman -S vmware-workstation</p>
-<p>sudo modprobe -a vmw_vmci vmmon</p>
-<p>sudo systemctl enable vmware-networks.service  vmware-usbarbitrator.service </p>
-<p>sudo systemctl start  vmware-networks.service  vmware-usbarbitrator.service </p>
-</li>
-<li><p>安装微信，QQ</p>
-<p>sudo pacman -S base-devel yay</p>
-<p>yay -Sy</p>
-<p>yay -S com.qq.weixin.spark</p>
-<p>yay -S com.qq.tim.spark</p>
-<p>注意：如果缺失win字体，中文显示会异常，可以拷贝win下面的simsun.ttf,simsun.ttc字体至~/.deepinwine/Spark-WeChat/drive_c/windows/Fonts/</p>
-</li>
-<li><p>win字体安装</p>
-<p>最好是win下面的全部字体都拷贝出来一份</p>
-<p>sudo mkdir /usr/share/fonts/win-fonts</p>
-<p>sudo cp <code>所有字体文件</code> /usr/share/fonts/win-fonts/</p>
-<p>sudo fc-cache -fv</p>
-</li>
-<li><p>安装WPS</p>
-<p>yay -S wps-office wps-office-mui-zh-cn ttf-wps-fonts</p>
-<p>注意安装过程中出现以下应答项，一定选择2，这样下载速度会快很多。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">:: 有 2 个提供者可用于 wps-office:</span><br><span class="line">:: AUR 软件库</span><br><span class="line">    1) wps-office 2) wps-office-cn </span><br><span class="line"></span><br><span class="line">输入数字 (默认&#x3D;1): </span><br></pre></td></tr></table></figure></li>
-<li><p>安装Pycharm社区版</p>
-<p>sudo pacman -S pycharm-community-edition</p>
-</li>
-<li><p>修改主目录为英文</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo pacman -S xdg-user-dirs-gtk</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> LANG=en_US</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> xdg-user-dirs-gtk-update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="comment">#然后会有个窗口提示语言更改，更新名称即可</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> LANG=zh_CN.UTF-8</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="comment">#然后重启电脑如果提示语言更改，保留旧的名称即可</span></span></span><br><span class="line">修改属性链接为英文目录，把对应中文目录下所有的文件拷贝到英文目录</span><br></pre></td></tr></table></figure></li>
-</ol>
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 ]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
   </entry>
   <entry>
     <title>k8s基础</title>
@@ -489,6 +444,51 @@
 ]]></content>
       <categories>
         <category>K8S</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Manjaro初始化</title>
+    <url>/enjoytech/2021/03/12/manjaro/</url>
+    <content><![CDATA[<ol>
+<li><p>安装VirtualBox</p>
+<p>查看内核版本，下载对应版本包：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[jiang@e450 ~]$ uname -a</span><br><span class="line">Linux e450 5.9.16-1-MANJARO #1 SMP PREEMPT Mon Dec 21 22:00:46 UTC 2020 x86_64 GNU&#x2F;Linux</span><br></pre></td></tr></table></figure>
+
+<p>sudo pacman -S linux59-headers linux59-virtualbox-host-modules virtualbox-host-dkms virtualbox</p>
+</li>
+<li><p>安装Vmware workstation</p>
+<p>安装VirtualBox时已经安装了linux59-headers模块</p>
+<p>sudo pacman -S vmware-workstation</p>
+<p>sudo modprobe -a vmw_vmci vmmon</p>
+<p>sudo systemctl enable vmware-networks.service  vmware-usbarbitrator.service </p>
+<p>sudo systemctl start  vmware-networks.service  vmware-usbarbitrator.service </p>
+</li>
+<li><p>安装微信，QQ</p>
+<p>sudo pacman -S base-devel yay</p>
+<p>yay -Sy</p>
+<p>yay -S com.qq.weixin.spark</p>
+<p>yay -S com.qq.tim.spark</p>
+<p>注意：如果缺失win字体，中文显示会异常，可以拷贝win下面的simsun.ttf,simsun.ttc字体至~/.deepinwine/Spark-WeChat/drive_c/windows/Fonts/</p>
+</li>
+<li><p>win字体安装</p>
+<p>最好是win下面的全部字体都拷贝出来一份</p>
+<p>sudo mkdir /usr/share/fonts/win-fonts</p>
+<p>sudo cp <code>所有字体文件</code> /usr/share/fonts/win-fonts/</p>
+<p>sudo fc-cache -fv</p>
+</li>
+<li><p>安装WPS</p>
+<p>yay -S wps-office wps-office-mui-zh-cn ttf-wps-fonts</p>
+<p>注意安装过程中出现以下应答项，一定选择2，这样下载速度会快很多。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">:: 有 2 个提供者可用于 wps-office:</span><br><span class="line">:: AUR 软件库</span><br><span class="line">    1) wps-office 2) wps-office-cn </span><br><span class="line"></span><br><span class="line">输入数字 (默认&#x3D;1): </span><br></pre></td></tr></table></figure></li>
+<li><p>安装Pycharm社区版</p>
+<p>sudo pacman -S pycharm-community-edition</p>
+</li>
+<li><p>修改主目录为英文</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo pacman -S xdg-user-dirs-gtk</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> LANG=en_US</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> xdg-user-dirs-gtk-update</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="comment">#然后会有个窗口提示语言更改，更新名称即可</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> LANG=zh_CN.UTF-8</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="comment">#然后重启电脑如果提示语言更改，保留旧的名称即可</span></span></span><br><span class="line">修改属性链接为英文目录，把对应中文目录下所有的文件拷贝到英文目录</span><br></pre></td></tr></table></figure></li>
+</ol>
+]]></content>
+      <categories>
+        <category>Linux</category>
       </categories>
   </entry>
   <entry>
