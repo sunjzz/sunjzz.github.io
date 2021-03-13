@@ -57,7 +57,7 @@ code,
 kbd,
 samp {
   font-family: monospace, monospace; /* 1 */
-  font-size: 1em; /* 2 */
+  font-size: 0.8em; /* 2 */
 }
 small {
   font-size: 80%;
@@ -1240,7 +1240,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #ffc1a4;
+  background: #ffcfe5;
   border-radius: 50%;
   content: ' ';
   display: inline-block;

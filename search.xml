@@ -274,7 +274,7 @@
     <title>Git学习</title>
     <url>/enjoytech/2021/03/12/git%E7%89%88%E6%9C%AC%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7/</url>
     <content><![CDATA[<h2 id="Git版本管理工具"><a href="#Git版本管理工具" class="headerlink" title="Git版本管理工具"></a>Git版本管理工具</h2><p>常用命令：</p>
-<p>  git config –global user.email “<a href="mailto:&#121;&#x6f;&#117;&#64;&#101;&#120;&#97;&#x6d;&#x70;&#108;&#x65;&#x2e;&#99;&#111;&#x6d;">&#121;&#x6f;&#117;&#64;&#101;&#120;&#97;&#x6d;&#x70;&#108;&#x65;&#x2e;&#99;&#111;&#x6d;</a>“<br>  git config –global user.name “Your Name”</p>
+<p>  git config –global user.email “<a href="mailto:&#x79;&#111;&#117;&#64;&#x65;&#x78;&#x61;&#109;&#112;&#108;&#101;&#46;&#x63;&#111;&#x6d;">&#x79;&#111;&#117;&#64;&#x65;&#x78;&#x61;&#109;&#112;&#108;&#101;&#46;&#x63;&#111;&#x6d;</a>“<br>  git config –global user.name “Your Name”</p>
 <ul>
 <li><p>git init    # 初始化，让git管理当前文件夹</p>
 </li>
@@ -492,55 +492,6 @@
       </categories>
   </entry>
   <entry>
-    <title>Swap分区异常问题解决及rEFInd引导</title>
-    <url>/enjoytech/2021/03/12/refind/</url>
-    <content><![CDATA[<h3 id="Swap分区异常"><a href="#Swap分区异常" class="headerlink" title="Swap分区异常"></a>Swap分区异常</h3><p>笔记本更换硬盘了，用ghost做了一下disk-to-disk拷贝，swap分区的uuid信息丢失，但是在系统的grub里面还有这个记录，启动和关闭系统时，有如下报错:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ERROR: resume: hibernation device <span class="string">&#x27;UUID=566cabc8-dd95-4290-9f8e-9eeewe76042e&#x27;</span> not found</span><br></pre></td></tr></table></figure>
-
-<p>解决：</p>
-<ul>
-<li><p>sudo pacman -S gparted</p>
-</li>
-<li><p>sudo gparted</p>
-</li>
-<li><p>图形化界面找到swap分区，右键-格式化成linux_swap分区，右键-新UUID</p>
-</li>
-<li><p>查看新uuid</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># blkid</span><br><span class="line">&#x2F;dev&#x2F;sda1: UUID&#x3D;&quot;9F05-D9BC&quot; BLOCK_SIZE&#x3D;&quot;512&quot; TYPE&#x3D;&quot;vfat&quot; PARTUUID&#x3D;&quot;241c1510-9b70-4ebf-a3ee-c0e6438ca409&quot;</span><br><span class="line">&#x2F;dev&#x2F;sda2: UUID&#x3D;&quot;969e7821-5adb-48bf-af1a-2f83e9306070&quot; BLOCK_SIZE&#x3D;&quot;4096&quot; TYPE&#x3D;&quot;ext4&quot; PARTUUID&#x3D;&quot;d170aa85-daaa-460e-a0af-ab806e8b581a&quot;</span><br><span class="line">&#x2F;dev&#x2F;sda3: UUID&#x3D;&quot;5417bf88-3d1f-4784-80f6-5b9bfd44ec52&quot; TYPE&#x3D;&quot;swap&quot; PARTUUID&#x3D;&quot;6422b4e6-31b5-4173-915d-2fbd90deca6e&quot;</span><br><span class="line">&#x2F;dev&#x2F;sdb1: LABEL&#x3D;&quot;H&quot; UUID&#x3D;&quot;DA18-EBFA&quot; BLOCK_SIZE&#x3D;&quot;512&quot; TYPE&#x3D;&quot;vfat&quot; PARTLABEL&#x3D;&quot;EFI system partition&quot; PARTUUID&#x3D;&quot;a80e041a-9ce9-4295-a5dc-e7113de615e4&quot;</span><br><span class="line">&#x2F;dev&#x2F;sdb2: LABEL&#x3D;&quot;M-gM-3M-;M-gM-;M-^_&quot; BLOCK_SIZE&#x3D;&quot;512&quot; UUID&#x3D;&quot;BCEA8B54EA8B0A3A&quot; TYPE&#x3D;&quot;ntfs&quot; PARTLABEL&#x3D;&quot;Basic data partition&quot; PARTUUID&#x3D;&quot;ed334da0-59ae-425f-9bc4-4b7bb4705974&quot;</span><br><span class="line">&#x2F;dev&#x2F;sdb3: LABEL&#x3D;&quot;M-fM-^UM-0M-fM-^MM-.&quot; BLOCK_SIZE&#x3D;&quot;512&quot; UUID&#x3D;&quot;2D97AD940A9AD661&quot; TYPE&#x3D;&quot;ntfs&quot; PARTLABEL&#x3D;&quot;Basic data partition&quot; PARTUUID&#x3D;&quot;5b6e051b-9acd-4305-883a-5587a9f335bf&quot;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>/dev/sda3: UUID=5417bf88-3d1f-4784-80f6-5b9bfd44ec52 就是我们要查的新的UUID</p>
-</li>
-<li><p>vi /etc/default/grub 修改 GRUB_CMDLINE_LINUX_DEFAULT行resume=UUID=<em>新UUID</em></p>
-</li>
-<li><p>sudo update-grub</p>
-<p>注意:不推荐直接修改/boot/grub/grub.cfg文件中的内容，而是通过上面的命令重新生成grub信息</p>
-</li>
-</ul>
-<h3 id="rEFInd引导"><a href="#rEFInd引导" class="headerlink" title="rEFInd引导"></a>rEFInd引导</h3><p>笔记本有两个硬盘位，分别安装了Win10和Manjaro系统，每次都要按F12来选择引导，比较麻烦。采用rEFInd来引导两个系统。</p>
-<ul>
-<li>查看磁盘第一个分区的相关信息</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># sgdisk -i 1 /dev/sda</span></span><br><span class="line">Partition GUID code: C12A7328-F81F-11D2-BA4B-00A0C93EC93B (EFI system partition)</span><br><span class="line">Partition unique GUID: 241C1510-9B70-4EBF-A3EE-C0E6438CA409</span><br><span class="line">First sector: 2048 (at 1024.0 KiB)</span><br><span class="line">Last sector: 4268031 (at 2.0 GiB)</span><br><span class="line">Partition size: 4265984 sectors (2.0 GiB)</span><br><span class="line">Attribute flags: 0000000000000000</span><br><span class="line">Partition name: <span class="string">&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># sgdisk -i 1 /dev/sdb</span></span><br><span class="line">Partition GUID code: C12A7328-F81F-11D2-BA4B-00A0C93EC93B (EFI system partition)</span><br><span class="line">Partition unique GUID: A80E041A-9CE9-4295-A5DC-E7113DE615E4</span><br><span class="line">First sector: 2048 (at 1024.0 KiB)</span><br><span class="line">Last sector: 616447 (at 301.0 MiB)</span><br><span class="line">Partition size: 614400 sectors (300.0 MiB)</span><br><span class="line">Attribute flags: 8000000000000000</span><br><span class="line">Partition name: <span class="string">&#x27;EFI system partition&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># sgdisk -i 2 /dev/sdb</span></span><br><span class="line">Partition GUID code: EBD0A0A2-B9E5-4433-87C0-68B6B72699C7 (Microsoft basic data)</span><br><span class="line">Partition unique GUID: ED334DA0-59AE-425F-9BC4-4B7BB4705974</span><br><span class="line">First sector: 616448 (at 301.0 MiB)</span><br><span class="line">Last sector: 190207999 (at 90.7 GiB)</span><br><span class="line">Partition size: 189591552 sectors (90.4 GiB)</span><br><span class="line">Attribute flags: 0000000000000000</span><br><span class="line">Partition name: <span class="string">&#x27;Basic data partition&#x27;</span></span><br><span class="line"><span class="comment"># 这是查看第二磁盘的第二分区的GUID，因为操作系统安装在这个分区</span></span><br></pre></td></tr></table></figure>
-
-<p>记录下/dev/sda1:<code>Partition unique GUID: 241C1510-9B70-4EBF-A3EE-C0E6438CA409</code></p>
-<p>/dev/sdb1:<code>Partition unique GUID: A80E041A-9CE9-4295-A5DC-E7113DE615E4</code></p>
-<p>这两个是两块磁盘的第一个EFI分区的GUID。</p>
-<p>/dev/sdb2:<code>Partition unique GUID: ED334DA0-59AE-425F-9BC4-4B7BB4705974</code></p>
-<p>这是第二块磁盘的第二个分区的GUID</p>
-<ul>
-<li><p>将第二块磁盘的EFI分区挂载，拷贝EFI/Microsoft至第一块磁盘/boot/efi/EFI/目录，之所以拷贝至第一块磁盘，是因为refind将安装在第一块磁盘。</p>
-</li>
-<li><p>安装rEFInd</p>
-</li>
-<li><p>配置rEFInd，vi /boot/efi/EFI/refind/refind.conf，文件末尾添加以下配置</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">dont_scan_volumes 241C1510-9B70-4EBF-A3EE-C0E6438CA409,A80E041A-9CE9-4295-A5DC-E7113DE615E4</span><br><span class="line"><span class="comment"># 这里就是上面我们查到的两块盘的第一个EFI分区，因为rEFInd会默认扫描所有的分区，所以会出现很多重复的启动项，这里先禁掉扫描的卷，要启动哪些项我们自己来定义</span></span><br><span class="line">scan_all_linux_kernels <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">include themes/rEFInd-minimal/theme.conf</span><br><span class="line"><span class="comment"># 下载了一个rEFInd-minimal的主题，这个是为了美化，可以不做</span></span><br><span class="line"></span><br><span class="line">menuentry <span class="string">&quot;Arch Linux&quot;</span> &#123;     </span><br><span class="line">    icon \EFI\refind\themes/rEFInd-minimal/icons/os_arch.png	<span class="comment"># 启动项的图标，这里用的是主题里面的图标</span></span><br><span class="line">    loader \EFI\Manjaro\grubx64.efi</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">menuentry <span class="string">&quot;Windows 10&quot;</span> &#123;     </span><br><span class="line">    icon \EFI\refind\themes/rEFInd-minimal/icons/os_win8.png</span><br><span class="line">    volume ED334DA0-59AE-425F-9BC4-4B7BB4705974	<span class="comment"># 引导的卷在/dev/sdb2</span></span><br><span class="line">    loader \EFI\Microsoft\Boot\bootmgfw.efi</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-</ul>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-  </entry>
-  <entry>
     <title>使用kubeadm搭建高可用k8s集群</title>
     <url>/enjoytech/2021/03/12/%E4%BD%BF%E7%94%A8kubeadm%E6%90%AD%E5%BB%BA%E9%AB%98%E5%8F%AF%E7%94%A8%E7%9A%84K8s%E9%9B%86%E7%BE%A4/</url>
     <content><![CDATA[<p>kubeadm是官方社区推出的一个用于快速部署kubernetes集群的工具。</p>
@@ -686,6 +637,55 @@
 ]]></content>
       <categories>
         <category>K8S</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Swap分区异常问题解决及rEFInd引导</title>
+    <url>/enjoytech/2021/03/12/refind/</url>
+    <content><![CDATA[<h3 id="Swap分区异常"><a href="#Swap分区异常" class="headerlink" title="Swap分区异常"></a>Swap分区异常</h3><p>笔记本更换硬盘了，用ghost做了一下disk-to-disk拷贝，swap分区的uuid信息丢失，但是在系统的grub里面还有这个记录，启动和关闭系统时，有如下报错:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ERROR: resume: hibernation device <span class="string">&#x27;UUID=566cabc8-dd95-4290-9f8e-9eeewe76042e&#x27;</span> not found</span><br></pre></td></tr></table></figure>
+
+<p>解决：</p>
+<ul>
+<li><p>sudo pacman -S gparted</p>
+</li>
+<li><p>sudo gparted</p>
+</li>
+<li><p>图形化界面找到swap分区，右键-格式化成linux_swap分区，右键-新UUID</p>
+</li>
+<li><p>查看新uuid</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># blkid</span><br><span class="line">&#x2F;dev&#x2F;sda1: UUID&#x3D;&quot;9F05-D9BC&quot; BLOCK_SIZE&#x3D;&quot;512&quot; TYPE&#x3D;&quot;vfat&quot; PARTUUID&#x3D;&quot;241c1510-9b70-4ebf-a3ee-c0e6438ca409&quot;</span><br><span class="line">&#x2F;dev&#x2F;sda2: UUID&#x3D;&quot;969e7821-5adb-48bf-af1a-2f83e9306070&quot; BLOCK_SIZE&#x3D;&quot;4096&quot; TYPE&#x3D;&quot;ext4&quot; PARTUUID&#x3D;&quot;d170aa85-daaa-460e-a0af-ab806e8b581a&quot;</span><br><span class="line">&#x2F;dev&#x2F;sda3: UUID&#x3D;&quot;5417bf88-3d1f-4784-80f6-5b9bfd44ec52&quot; TYPE&#x3D;&quot;swap&quot; PARTUUID&#x3D;&quot;6422b4e6-31b5-4173-915d-2fbd90deca6e&quot;</span><br><span class="line">&#x2F;dev&#x2F;sdb1: LABEL&#x3D;&quot;H&quot; UUID&#x3D;&quot;DA18-EBFA&quot; BLOCK_SIZE&#x3D;&quot;512&quot; TYPE&#x3D;&quot;vfat&quot; PARTLABEL&#x3D;&quot;EFI system partition&quot; PARTUUID&#x3D;&quot;a80e041a-9ce9-4295-a5dc-e7113de615e4&quot;</span><br><span class="line">&#x2F;dev&#x2F;sdb2: LABEL&#x3D;&quot;M-gM-3M-;M-gM-;M-^_&quot; BLOCK_SIZE&#x3D;&quot;512&quot; UUID&#x3D;&quot;BCEA8B54EA8B0A3A&quot; TYPE&#x3D;&quot;ntfs&quot; PARTLABEL&#x3D;&quot;Basic data partition&quot; PARTUUID&#x3D;&quot;ed334da0-59ae-425f-9bc4-4b7bb4705974&quot;</span><br><span class="line">&#x2F;dev&#x2F;sdb3: LABEL&#x3D;&quot;M-fM-^UM-0M-fM-^MM-.&quot; BLOCK_SIZE&#x3D;&quot;512&quot; UUID&#x3D;&quot;2D97AD940A9AD661&quot; TYPE&#x3D;&quot;ntfs&quot; PARTLABEL&#x3D;&quot;Basic data partition&quot; PARTUUID&#x3D;&quot;5b6e051b-9acd-4305-883a-5587a9f335bf&quot;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>/dev/sda3: UUID=5417bf88-3d1f-4784-80f6-5b9bfd44ec52 就是我们要查的新的UUID</p>
+</li>
+<li><p>vi /etc/default/grub 修改 GRUB_CMDLINE_LINUX_DEFAULT行resume=UUID=<em>新UUID</em></p>
+</li>
+<li><p>sudo update-grub</p>
+<p>注意:不推荐直接修改/boot/grub/grub.cfg文件中的内容，而是通过上面的命令重新生成grub信息</p>
+</li>
+</ul>
+<h3 id="rEFInd引导"><a href="#rEFInd引导" class="headerlink" title="rEFInd引导"></a>rEFInd引导</h3><p>笔记本有两个硬盘位，分别安装了Win10和Manjaro系统，每次都要按F12来选择引导，比较麻烦。采用rEFInd来引导两个系统。</p>
+<ul>
+<li>查看磁盘第一个分区的相关信息</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># sgdisk -i 1 /dev/sda</span></span><br><span class="line">Partition GUID code: C12A7328-F81F-11D2-BA4B-00A0C93EC93B (EFI system partition)</span><br><span class="line">Partition unique GUID: 241C1510-9B70-4EBF-A3EE-C0E6438CA409</span><br><span class="line">First sector: 2048 (at 1024.0 KiB)</span><br><span class="line">Last sector: 4268031 (at 2.0 GiB)</span><br><span class="line">Partition size: 4265984 sectors (2.0 GiB)</span><br><span class="line">Attribute flags: 0000000000000000</span><br><span class="line">Partition name: <span class="string">&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># sgdisk -i 1 /dev/sdb</span></span><br><span class="line">Partition GUID code: C12A7328-F81F-11D2-BA4B-00A0C93EC93B (EFI system partition)</span><br><span class="line">Partition unique GUID: A80E041A-9CE9-4295-A5DC-E7113DE615E4</span><br><span class="line">First sector: 2048 (at 1024.0 KiB)</span><br><span class="line">Last sector: 616447 (at 301.0 MiB)</span><br><span class="line">Partition size: 614400 sectors (300.0 MiB)</span><br><span class="line">Attribute flags: 8000000000000000</span><br><span class="line">Partition name: <span class="string">&#x27;EFI system partition&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># sgdisk -i 2 /dev/sdb</span></span><br><span class="line">Partition GUID code: EBD0A0A2-B9E5-4433-87C0-68B6B72699C7 (Microsoft basic data)</span><br><span class="line">Partition unique GUID: ED334DA0-59AE-425F-9BC4-4B7BB4705974</span><br><span class="line">First sector: 616448 (at 301.0 MiB)</span><br><span class="line">Last sector: 190207999 (at 90.7 GiB)</span><br><span class="line">Partition size: 189591552 sectors (90.4 GiB)</span><br><span class="line">Attribute flags: 0000000000000000</span><br><span class="line">Partition name: <span class="string">&#x27;Basic data partition&#x27;</span></span><br><span class="line"><span class="comment"># 这是查看第二磁盘的第二分区的GUID，因为操作系统安装在这个分区</span></span><br></pre></td></tr></table></figure>
+
+<p>记录下/dev/sda1:<code>Partition unique GUID: 241C1510-9B70-4EBF-A3EE-C0E6438CA409</code></p>
+<p>/dev/sdb1:<code>Partition unique GUID: A80E041A-9CE9-4295-A5DC-E7113DE615E4</code></p>
+<p>这两个是两块磁盘的第一个EFI分区的GUID。</p>
+<p>/dev/sdb2:<code>Partition unique GUID: ED334DA0-59AE-425F-9BC4-4B7BB4705974</code></p>
+<p>这是第二块磁盘的第二个分区的GUID</p>
+<ul>
+<li><p>将第二块磁盘的EFI分区挂载，拷贝EFI/Microsoft至第一块磁盘/boot/efi/EFI/目录，之所以拷贝至第一块磁盘，是因为refind将安装在第一块磁盘。</p>
+</li>
+<li><p>安装rEFInd</p>
+</li>
+<li><p>配置rEFInd，vi /boot/efi/EFI/refind/refind.conf，文件末尾添加以下配置</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">dont_scan_volumes 241C1510-9B70-4EBF-A3EE-C0E6438CA409,A80E041A-9CE9-4295-A5DC-E7113DE615E4</span><br><span class="line"><span class="comment"># 这里就是上面我们查到的两块盘的第一个EFI分区，因为rEFInd会默认扫描所有的分区，所以会出现很多重复的启动项，这里先禁掉扫描的卷，要启动哪些项我们自己来定义</span></span><br><span class="line">scan_all_linux_kernels <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">include themes/rEFInd-minimal/theme.conf</span><br><span class="line"><span class="comment"># 下载了一个rEFInd-minimal的主题，这个是为了美化，可以不做</span></span><br><span class="line"></span><br><span class="line">menuentry <span class="string">&quot;Arch Linux&quot;</span> &#123;     </span><br><span class="line">    icon \EFI\refind\themes/rEFInd-minimal/icons/os_arch.png	<span class="comment"># 启动项的图标，这里用的是主题里面的图标</span></span><br><span class="line">    loader \EFI\Manjaro\grubx64.efi</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">menuentry <span class="string">&quot;Windows 10&quot;</span> &#123;     </span><br><span class="line">    icon \EFI\refind\themes/rEFInd-minimal/icons/os_win8.png</span><br><span class="line">    volume ED334DA0-59AE-425F-9BC4-4B7BB4705974	<span class="comment"># 引导的卷在/dev/sdb2</span></span><br><span class="line">    loader \EFI\Microsoft\Boot\bootmgfw.efi</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Linux</category>
       </categories>
   </entry>
   <entry>
